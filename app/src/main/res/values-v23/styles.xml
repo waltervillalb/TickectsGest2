@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="datePicker" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="colorAccent">@color/color3</item>
+        <item name="android:timePickerStyle">@style/datePicker</item>
+    </style>
+    <style name="subtitulo_createUser">Registrarse para comezar a utilizar la aplicación</style>
+
+    <style name="text_input_name">Nombre</style>
+
+</resources>

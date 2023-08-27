@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_login"
+    tools:context=".CreateUserActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="25dp">
+
+        <TextView
+            android:id="@+id/tv_textView"
+            style="@style/TituloCreateUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textAlignment="center"
+            android:fontFamily="@font/carme"
+            android:text="@string/createUser_titulo" />
+
+        <TextView
+            android:id="@+id/tv_text_createUser"
+            style="@style/subtitulo_createUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/carme"
+            android:text="@string/text_subtitle_createUser" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_nameCreateUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="@string/name_createUser"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_apellidoCreateUser"
+            style="@style/text_input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:boxStrokeColor="@color/color2"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etApellido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:hint="@string/apel_createUser"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_fechaNac"
+            style="@style/text_input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etFechaNac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:hint="@string/FechaNac_createUser"
+                android:clickable="true"
+                android:focusable="false"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_Genero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/background_input">
+
+            <Spinner
+                android:id="@+id/spGenero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:entries="@array/spTipoGenero"
+                android:textAlignment="center" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_celular"
+            style="@style/text_input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="@string/createUser_celular"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etNumeroCelular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_correo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/correo_email_createUser"
+                android:layout_gravity="center_horizontal"
+                android:inputType="textEmailAddress"
+                android:textAlignment="center"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_passw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etPasswordCreateUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/contra2_email_createUser"
+                android:ems="10"
+                android:inputType="textPassword" />
+
+            <CheckBox
+                android:id="@+id/cbMostrarContrasena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mostrar Contraseña"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/black"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnContinuarRegistro"
+            style="@style/botones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_text_createU"
+            android:layout_margin="20dp" />
+
+    </LinearLayout>
+</ScrollView>

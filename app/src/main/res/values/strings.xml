@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Gestickets</string>
+    <string name="text_comienzo">
+        De una manera más<font color="#93278F"><b> FÁCIL</b></font>
+    </string>
+    <string name="login_titulo">Iniciar Sesión</string>
+    <string name="text_url_logintext_url_login">
+    <font color="#93278F"><b>Inicia Sesión</b></font> Si ya tienes una cuenta.
+    </string>
+    <string name="email_text">Ingrese su Correo o Email</string>
+    <string name="email_password">Introduzca la contraseña</string>
+    <string name="recuperar_contra">¿Has olvidado la contraseña?</string>
+    <string name="login_noTengoCuenta">
+        No tengo una cuenta<font color="#93278F"><b> Registrarme</b></font>
+    </string>
+    <string name="btn_text_login">Iniciar Sesión
+    </string>
+
+
+    <string name="createUser_titulo">Crear Cuenta</string>
+    <string name="text_subtitle_createUser">
+    <font color="#93278F"><b>Regístrese</b></font> Para comezar a utilizar la Aplicación.
+    </string>
+    <string name="name_createUser">Nombres</string>
+    <string name="apel_createUser">Apellidos</string>
+    <string name="numCI_createUser">Documento de Identidad </string>
+    <string name="FechaNac_createUser">Fecha de Nacimiento</string>
+    <string name="numTele_createUser">Número de Celular</string>
+    <string name="correo_email_createUser">Correo o email</string>
+    <string name="contra1_createUser">Contraseña</string>
+    <string name="contra2_email_createUser">Contraseña</string>
+    <string name="btn_text_createU">Continuar con el registro
+    </string>
+    <string name="createUser_celular">Numero de Celular</string>
+    <string name="createUser_Direccion">Dirección</string>
+    <string name="Genero">Género</string>
+    <string name="btn_validarTelefo">Validar Numero de Celular</string>
+    <string name="Abrir_nav">Abrir Barra de Navegacion</string>
+    <string name="Cerrar_nav">Cerrar Barra de Navegacion</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

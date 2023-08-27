@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_titulo">Inicio de Sesión</string>
+    <string name="email_text">Ingrese su Correo o Email</string>
+    <string name="email_password">Introduzca la
+        contraseña</string>
+    <string name="recuperar_contra">¿Has olvidado la contraseña?</string>
+    <string name="login_noTengoCuenta">
+        No tengo una cuenta<font color="#93278F"><b> Registrarme</b></font>
+    </string>
+    <string name="btn_text_login">Iniciar Sesión</string>
+
+
+    <string name="text_comienzo">
+        De una manera más<font color="#93278F"><b> FÁCIL</b></font>
+    </string>
+    <string name="createUser_celular">Numero de Celular</string>
+    <string name="createUser_Direccion">Dirección</string>
+    <string name="Genero">Género</string>
+    <string name="btn_validarTelefo">Validar Numero de Celular</string>
+</resources>

@@ -1,0 +1,97 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.TickectsGest" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/logoPrincipal</item>
+        <item name="colorPrimaryVariant">@color/black</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+
+        </style>
+
+    <style name="CustomActivityAnimation">
+        <item name="android:windowEnterAnimation">@anim/bar_direc</item>
+        <item name="android:windowExitAnimation">@anim/bar_direc2</item>
+    </style>
+
+        <style name="InicioconTema" parent="Theme.AppCompat.NoActionBar">
+            <item name="android:windowBackground">@drawable/splashscreen</item>
+        </style>
+
+    <style name="pantallaPrin" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/logoPrincipal</item>
+    </style>
+
+    <style name="botones">
+        <item name="android:background">@drawable/bg_button</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="btn_google">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TituloLogin">
+        <item name="android:fontFamily">@font/carme</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TituloCreateUser">
+        <item name="android:fontFamily">@font/carme</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="subtitulo_login">
+        <item name="android:fontFamily">@font/carme</item>
+        <item name="android:textColor">@color/colorBackLogin2</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text_input_layout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textColorHint">@color/colorBackLogin2</item>
+        <item name="hintTextColor">@color/colorBackLogin2</item>
+        <item name="startIconTint">@color/color3</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="cardCornerRadius">50dp</item>
+    </style>
+
+
+    <style name="text_input_edit" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:background">@drawable/bg_text_field</item>
+        <item name="android:fontFamily">@font/carme</item>
+        <item name="startIconTint">@color/color3</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+    </style>
+
+    <style name="FormEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/secondary_light</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="singleLine">true</item>
+        <item name="maxLines">1</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textColorHint">@color/secondary_light</item>
+    </style>
+    <style name="FormTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:textColorHint">@color/color1</item>
+        <item name="boxStrokeColor">@color/primary</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="hintTextColor">@color/primary</item>
+    </style>
+</resources>

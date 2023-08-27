@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/degradado_background"
+    tools:context=".ContraRecuperar">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
+            <TextView
+                android:id="@+id/txtEmailRecuContra"
+                style="@style/TituloLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/carme"
+                android:text="Recuperar Contraseña"
+                android:textSize="35sp"
+                android:layout_gravity="center_horizontal" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/titulo_nameRecupass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_input">
+
+                <EditText
+                    android:id="@+id/recu_emailText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/email_text"
+                    android:textSize="18sp"
+                    app:startIconDrawable="@drawable/baseline_email_24" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="16dp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_recuContra"
+                style="@style/botones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recuperar Contraseña" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="32dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

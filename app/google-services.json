@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "348332677708",
+    "project_id": "gesttickets-8818a",
+    "storage_bucket": "gesttickets-8818a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348332677708:android:72f1ed07e20b20ebfbf2e9",
+        "android_client_info": {
+          "package_name": "com.Android.tickects"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348332677708-6d1aeaeh6csd5u824sg6hjtf4j4mv2hn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.Android.tickects",
+            "certificate_hash": "ea66902f5bd46b749b2d3e1e4dcb970ad7d33f21"
+          }
+        },
+        {
+          "client_id": "348332677708-2om1m16a9jngklefme28nkuse6pmjbns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaevcZqdphEXmZEqZLyUWKnQE__k12o2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348332677708-2om1m16a9jngklefme28nkuse6pmjbns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
