@@ -118,6 +118,23 @@
                 android:textAlignment="center"
                 android:inputType="phone"/>
         </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/titulo_numeroCI"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/background_input">
+
+            <EditText
+                android:id="@+id/etNumeroCi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/numeroCI"
+                android:layout_gravity="center_horizontal"
+                android:inputType="textEmailAddress"
+                android:textAlignment="center"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/titulo_correo"

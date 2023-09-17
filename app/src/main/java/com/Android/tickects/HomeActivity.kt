@@ -56,6 +56,8 @@ class HomeActivity : AppCompatActivity() {
         fab.setOnClickListener {
             showBottomDialog()
         }
+
+
     }
 
     private fun replaceFragment(fragment: Fragment) {
