@@ -8,7 +8,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="-44dp"
+        tools:layout_editor_absoluteY="26dp">
 
         <TextView
             android:id="@+id/txt_title"
@@ -17,6 +19,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="82dp"
             android:text="Validar número de teléfono"
+            android:textColor="@color/color3"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -25,11 +28,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/txt_title"
-            android:hint="Código de verificación"
-            android:inputType="number"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Código de verificación"
+            android:inputType="number" />
 
         <Button
             android:id="@+id/btn_CrearUsuario"
@@ -38,8 +41,10 @@
             android:layout_below="@id/edt_code"
             android:layout_alignParentStart="true"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@color/color2"
             android:text="Crear Usuario"
-            android:visibility="invisible"/>
+            android:textColor="@color/white"
+            android:visibility="invisible" />
 
         <Button
             android:id="@+id/btn_validar"
@@ -49,8 +54,10 @@
             android:layout_alignParentStart="true"
             android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
+            android:backgroundTint="@color/color3"
             android:text="validar"
-            android:visibility="visible"/>
+            android:textColor="@color/white"
+            android:visibility="visible" />
 
     </RelativeLayout>
 

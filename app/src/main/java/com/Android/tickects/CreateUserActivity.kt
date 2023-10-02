@@ -71,33 +71,37 @@ class CreateUserActivity : AppCompatActivity() {
 
         val btnEnviarRegistro = findViewById<Button>(R.id.btnContinuarRegistro)
         btnEnviarRegistro.setOnClickListener {
-            if (hayErrores) {
+            //if (hayErrores) {
                 // hay errores, mostrar mensaje y no hacer nada
-                Toast.makeText(
-                    this,
-                    "Por favor, ingrese información válida en los datos ingresados anteriormente",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
+              //  Toast.makeText(
+               //     this,
+              //      "Por favor, ingrese información válida en los datos ingresados anteriormente",
+              //      Toast.LENGTH_SHORT
+              //  ).show()
+          //  } else {
                 enviarCodigo()
                 val dialogView = layoutInflater.inflate(R.layout.validatephone_number, null)
                 val codigoEditText = dialogView.findViewById<EditText>(R.id.edt_code)
                 val validarButton = dialogView.findViewById<Button>(R.id.btn_validar)
                 val crearUsuarioButton = dialogView.findViewById<Button>(R.id.btn_CrearUsuario)
 
-                // val alertDialog = AlertDialog.Builder(this).setTitle("Introducir Código").setView(dialogView).create()
-                //  val dialog = alertDialog.show()
+            val alertDialog = AlertDialog.Builder(this)
+                .setTitle("Introducir Código")
+                .setView(dialogView)
+                .create()
 
-                dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
-                    val codigo = codigoEditText.text.toString()
-                    val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
-                    signInWithPhoneAuthCredential(credential, validarButton, crearUsuarioButton)
-                    // Cerrar el diálogo después de validar el código
-                }
+            val dialog = alertDialog.show()
 
+            dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
+                val codigo = codigoEditText.text.toString()
+                val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
+                signInWithPhoneAuthCredential(credential, validarButton, crearUsuarioButton)
+                // Cerrar el diálogo después de validar el código
+            }
 
                 dialogView.findViewById<Button>(R.id.btn_CrearUsuario).setOnClickListener {
                     // Verificar si hay errores
+
                     val nombre = findViewById<EditText>(R.id.etNombre).text.toString().trim()
                     val apellido = findViewById<EditText>(R.id.etApellido).text.toString().trim()
                     val telefono =
@@ -108,8 +112,7 @@ class CreateUserActivity : AppCompatActivity() {
                     val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
                     saveUserData(nombre, apellido, telefono, genero, fechanac, email, numeroCI)
                     // Cerrar el diálogo después de crear el usuario
-                }
-
+         //       }
             }
         }
 
@@ -133,7 +136,7 @@ class CreateUserActivity : AppCompatActivity() {
         if (phoneNumber.isNotEmpty()) {
             val options = PhoneAuthOptions.newBuilder(auth)
                 .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
+                .setTimeout(80L, TimeUnit.SECONDS)
                 .setActivity(this)
                 .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -210,6 +213,11 @@ class CreateUserActivity : AppCompatActivity() {
     private fun validarCorreo() {
         val emailEditText = findViewById<EditText>(R.id.etEmail)
 
+        if (emailEditText.text.toString().isEmpty()) {
+            emailEditText.error = "Ingrese una contraseña"
+            hayErrores = true
+        }
+
         emailEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val correo = s.toString().trim()
@@ -269,11 +277,6 @@ class CreateUserActivity : AppCompatActivity() {
                         emailEditText.error = null
                         hayErrores = false
                     }
-                } else {
-                    // Maneja los errores aquí
-                    val emailEditText = findViewById<EditText>(R.id.etEmail)
-                    emailEditText.error = "Error al verificar el correo electrónico"
-                    hayErrores = true
                 }
             }
     }
@@ -286,11 +289,10 @@ class CreateUserActivity : AppCompatActivity() {
         // Obtener el valor seleccionado en el Spinner
         val generoSeleccionado = generoSpinner.selectedItem?.toString() ?: ""
 
-        // Validar que no esté vacío
-        if (generoSeleccionado.isEmpty() || generoSeleccionado == "Selecciona una opción") {
-            generoError.error = "Seleccione su género"
+        // Validar que se haya seleccionado un género distinto de "Selecciona una opción"
+        if (generoSeleccionado == "Selecciona una opción") {
+            generoError.error = "  Seleccione su género"
             hayErrores = true
-            return
         } else {
             generoError.error = null
             hayErrores = false
@@ -305,7 +307,7 @@ class CreateUserActivity : AppCompatActivity() {
             ) {
                 val genero = parent?.getItemAtPosition(position)?.toString() ?: ""
                 if (genero == "Selecciona una opción") {
-                    generoError.error = "Seleccione su género"
+                    generoError.error = "  Seleccione su género"
                     hayErrores = true
                 } else {
                     generoError.error = null
@@ -320,6 +322,11 @@ class CreateUserActivity : AppCompatActivity() {
 
     private fun validarNombre() {
         val nombreEditText = findViewById<EditText>(R.id.etNombre)
+
+        if (nombreEditText.text.toString().isEmpty()) {
+            nombreEditText.error = "Ingrese un nombre válido"
+            hayErrores = true
+        }
 
         nombreEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -352,6 +359,10 @@ class CreateUserActivity : AppCompatActivity() {
     private fun validarApellido() {
         val apeEditText = findViewById<EditText>(R.id.etApellido)
 
+        if (apeEditText.text.toString().isEmpty()) {
+            apeEditText.error = "Ingrese un apellido valido"
+            hayErrores = true
+        }
         apeEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val apellido = s.toString().trim()
@@ -384,6 +395,11 @@ class CreateUserActivity : AppCompatActivity() {
         val telefonoEditText = findViewById<EditText>(R.id.etNumeroCelular)
         val telefonoRegex = Regex("^\\+595\\d{9}\$")
 
+        if (telefonoEditText.text.toString().isEmpty()) {
+            telefonoEditText.error = "Ingrese un numero de telefono valido"
+            hayErrores = true
+        }
+
         telefonoEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val telefono = s.toString().trim()
@@ -415,7 +431,7 @@ class CreateUserActivity : AppCompatActivity() {
                 }
 
                 // Aquí pasamos telefonoEditText como argumento
-                verificarTelefono(telefonoModificado, telefonoEditText)
+                //verificarTelefono(telefonoModificado, telefonoEditText)
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -460,52 +476,49 @@ class CreateUserActivity : AppCompatActivity() {
 
     private fun validarFechaNacimiento() {
         val fechaNacimientoEditText = findViewById<EditText>(R.id.etFechaNac)
+        val fechaNacimientoInputLayout = findViewById<TextInputLayout>(R.id.titulo_fechaNac)
+
+        if (fechaNacimientoEditText.text.toString().isEmpty()) {
+            fechaNacimientoInputLayout.error = "  Ingrese su fecha de nacimiento"
+            hayErrores = true
+        }
+
         fechaNacimientoEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val fechaNacimiento = fechaNacimientoEditText.text.toString().trim()
                 if (fechaNacimiento.isEmpty()) {
-                    fechaNacimientoEditText.error = "Ingrese su fecha de nacimiento" // Elimina el mensaje de error si la fecha está vacía
+                    fechaNacimientoInputLayout.error = "  Ingrese su fecha de nacimiento"
                     hayErrores = true
                     return
                 }
-
                 val formatter = SimpleDateFormat("dd/MM/yyyy")
                 val fechaNacimientoDate = try {
                     formatter.parse(fechaNacimiento)
                 } catch (e: Exception) {
                     null
                 }
-
-                // Validar que no esté vacío
                 if (fechaNacimientoDate == null) {
-                    fechaNacimientoEditText.error =
-                        "Ingrese una fecha de nacimiento válida en formato dd/MM/yyyy"
+                    fechaNacimientoInputLayout.error = "Formato de fecha inválido. Use dd/MM/yyyy"
                     hayErrores = true
-                    return
-                }
-
-                fechaNacimientoEditText.error = null
-                hayErrores = false
-
-                val hoy = Calendar.getInstance().time
-                val edad = calcularEdad(fechaNacimientoDate, hoy)
-                if (edad < 18) {
-                    fechaNacimientoEditText.error = "Debe ser mayor de edad para registrarse"
-                    hayErrores = true
+                } else {
+                    val hoy = Calendar.getInstance().time
+                    val edad = calcularEdad(fechaNacimientoDate, hoy)
+                    if (edad < 18) {
+                        fechaNacimientoInputLayout.error = "  Debe ser mayor de edad para registrarse"
+                        hayErrores = true
+                    } else {
+                        fechaNacimientoInputLayout.error = null
+                        hayErrores = false
+                    }
                 }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Validar que no esté vacío
-                if (s.toString().isEmpty()) {
-                    fechaNacimientoEditText.error = "Ingrese su fecha de nacimiento" // Elimina el mensaje de error si la fecha está vacía
-                    hayErrores = true
-                    return
-                }
-            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
+
 
     private fun calcularEdad(fechaNacimiento: Date, hoy: Date): Int {
         val diffInMillis = hoy.time - fechaNacimiento.time
@@ -637,6 +650,11 @@ class CreateUserActivity : AppCompatActivity() {
     private fun validarNumeroCI() {
         val ciEditText = findViewById<EditText>(R.id.etNumeroCi)
 
+        if (ciEditText.text.toString().isEmpty()) {
+            ciEditText.error = "Ingrese un número de cédula"
+            hayErrores = true
+        }
+
         ciEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val numeroCI = s.toString().trim()
@@ -646,27 +664,29 @@ class CreateUserActivity : AppCompatActivity() {
                     ciEditText.error = "Ingrese un número de cédula"
                     hayErrores = true
                     return
-                }
-
-                // Validar que tenga al menos 6 caracteres
-                if (numeroCI.length < 6) {
+                } else if (numeroCI.length < 6) {
                     ciEditText.error = "El número de cédula debe tener al menos 6 caracteres"
                     hayErrores = true
                     return
+                } else {
+                    ciEditText.error = null
+                    hayErrores = false
+                    // Llamar a la función que verifica si el número de cédula ya existe
+                    verificarNumeroCI(numeroCI, ciEditText)
                 }
-
-                // Llamar a la función que verifica si el número de cédula ya existe
-                verificarNumeroCI(numeroCI, ciEditText)
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Validar que no esté vacío
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Validar que no esté vacío antes de cambiar el texto
                 if (s.toString().isEmpty()) {
                     ciEditText.error = "Ingrese un número de cédula"
                     hayErrores = true
                     return
                 }
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Este método se ejecuta cuando el texto cambia, pero no es necesario validar aquí
             }
         })
     }
@@ -694,6 +714,41 @@ class CreateUserActivity : AppCompatActivity() {
                     hayErrores = false
                 }
             }
+    }
+    private fun validarcodigo() {
+        val codigoEditText = findViewById<EditText>(R.id.edt_code)
+
+        if (codigoEditText.text.toString().isEmpty()) {
+            codigoEditText.error = "Ingrese un nombre válido"
+            hayErrores = true
+        }
+
+        codigoEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val nombre = s.toString().trim()
+                if (nombre.isEmpty()) {
+                    codigoEditText.error = "El nombre no puede estar vacío"
+                    hayErrores = true
+                    return
+                } else if (nombre.length < 5) {
+                    codigoEditText.error = "El nombre debe tener al menos 5 letras"
+                    hayErrores = true
+                } else {
+                    codigoEditText.error = null
+                    hayErrores = false
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Validar que no esté vacío
+                if (s.toString().isEmpty()) {
+                    codigoEditText.error = ""
+                    hayErrores = true
+                    return
+                }
+            }
+        })
     }
 }
 
