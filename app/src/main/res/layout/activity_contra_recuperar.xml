@@ -29,7 +29,6 @@
                 android:layout_height="32dp" />
 
             <TextView
-                android:id="@+id/txtEmailRecuContra"
                 style="@style/TituloLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,7 +42,6 @@
                 android:layout_height="16dp" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/titulo_nameRecupass"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_input">

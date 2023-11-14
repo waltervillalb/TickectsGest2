@@ -71,14 +71,10 @@ class CreateUserActivity : AppCompatActivity() {
 
         val btnEnviarRegistro = findViewById<Button>(R.id.btnContinuarRegistro)
         btnEnviarRegistro.setOnClickListener {
-            //if (hayErrores) {
-                // hay errores, mostrar mensaje y no hacer nada
-              //  Toast.makeText(
-               //     this,
-              //      "Por favor, ingrese información válida en los datos ingresados anteriormente",
-              //      Toast.LENGTH_SHORT
-              //  ).show()
-          //  } else {
+            if (hayErrores) {
+               //hay errores, mostrar mensaje y no hacer nada
+              Toast.makeText(this, "Por favor, ingrese información válida en los datos ingresados anteriormente", Toast.LENGTH_SHORT).show()
+           } else {
                 enviarCodigo()
                 val dialogView = layoutInflater.inflate(R.layout.validatephone_number, null)
                 val codigoEditText = dialogView.findViewById<EditText>(R.id.edt_code)
@@ -100,23 +96,18 @@ class CreateUserActivity : AppCompatActivity() {
             }
 
                 dialogView.findViewById<Button>(R.id.btn_CrearUsuario).setOnClickListener {
-                    // Verificar si hay errores
-
                     val nombre = findViewById<EditText>(R.id.etNombre).text.toString().trim()
                     val apellido = findViewById<EditText>(R.id.etApellido).text.toString().trim()
-                    val telefono =
-                        findViewById<EditText>(R.id.etNumeroCelular).text.toString().trim()
+                    val telefono = findViewById<EditText>(R.id.etNumeroCelular).text.toString().trim()
                     val numeroCI = findViewById<EditText>(R.id.etNumeroCi).text.toString().trim()
                     val genero = findViewById<Spinner>(R.id.spGenero).selectedItem.toString()
                     val fechanac = FechaRegistro.text.toString().trim()
                     val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
-                    saveUserData(nombre, apellido, telefono, genero, fechanac, email, numeroCI)
+                    saveUserData(nombre, apellido, telefono, numeroCI, genero, fechanac, email)
                     // Cerrar el diálogo después de crear el usuario
-         //       }
+                }
             }
         }
-
-
         validarTelefono()
         validarCorreo()
         validarNombre()
@@ -586,8 +577,8 @@ class CreateUserActivity : AppCompatActivity() {
         nombre: String,
         apellido: String,
         telefono: String,
-        genero: String,
         numeroCI: String,
+        genero: String,
         fechanac: String,
         email: String
     ) {
@@ -600,7 +591,8 @@ class CreateUserActivity : AppCompatActivity() {
             "numeroci" to numeroCI,
             "genero" to genero,
             "fechanacimiento" to fechanac,
-            "correo" to email
+            "correo" to email,
+            "rol" to "Usuario"
         )
         val db = FirebaseFirestore.getInstance()
         db.collection("users").document(uid).set(userData)

@@ -1,38 +1,31 @@
 package com.Android.tickects
 
 import android.app.AlertDialog
-import android.app.Dialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.Window
+import android.util.Log
+import android.view.*
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.navigation.ui.AppBarConfiguration
-import com.Android.tickects.Dialogs.ContactosFragment
-import com.Android.tickects.Dialogs.EntradasFragment
-import com.Android.tickects.Dialogs.EventorFragment
-import com.Android.tickects.Dialogs.HomeFragment
+import com.Android.tickects.Dialogs.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 
-class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener{
+class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var fab: FloatingActionButton
     private lateinit var frameLayout: FrameLayout
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var navigationView: NavigationView
     private lateinit var drawerLayout: DrawerLayout
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var toggle: ActionBarDrawerToggle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -40,23 +33,20 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
         fab = findViewById(R.id.fab)
         frameLayout = findViewById(R.id.frame_layout)
-        drawerLayout= findViewById(R.id.drawer_layout)
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        val header = navigationView.getHeaderView(0)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
 
 
-        navigationView.setNavigationItemSelectedListener(this)
-        val toggle = ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.abrir_drawer,R.string.cerrar_drawer)
-
+        toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.abrir_drawer, R.string.cerrar_drawer)
         drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        navigationView.setNavigationItemSelectedListener (this)
 
-        replaceFragment(HomeFragment())
+
+
 
         bottomNavigationView.background = null
         bottomNavigationView.setOnItemSelectedListener { item ->
@@ -65,19 +55,17 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                 R.id.shorts -> replaceFragment(EntradasFragment())
                 R.id.subscriptions -> replaceFragment(EventorFragment())
                 R.id.library -> replaceFragment(ContactosFragment())
+
             }
             true
         }
-
-
-
         fab.setOnClickListener {
-            showBottomDialog()
+            Log.d("ClickEvent", "Floating Action Button Clicked!")
+            val fragment = addEntradasFragment()
+            supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).addToBackStack(null).commit()
         }
-
-
+        replaceFragment(HomeFragment())
     }
-
 
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
@@ -87,41 +75,18 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun showBottomDialog() {
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.buttom_layout)
-
-        val videoLayout = dialog.findViewById<LinearLayout>(R.id.layoutVideo)
-        val shortsLayout = dialog.findViewById<LinearLayout>(R.id.layoutShorts)
-        val liveLayout = dialog.findViewById<LinearLayout>(R.id.layoutLive)
-        val cancelButton = dialog.findViewById<ImageView>(R.id.cancelButton)
-
-        videoLayout.setOnClickListener {
-            dialog.dismiss()
-            Toast.makeText(this@HomeActivity, "Upload a Video is clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        shortsLayout.setOnClickListener {
-            dialog.dismiss()
-            Toast.makeText(this@HomeActivity, "Create a short is Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        liveLayout.setOnClickListener {
-            dialog.dismiss()
-            Toast.makeText(this@HomeActivity, "Go live is Clicked", Toast.LENGTH_SHORT).show()
-        }
-
-        cancelButton.setOnClickListener { dialog.dismiss() }
-
-        dialog.show()
-        dialog.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.attributes?.windowAnimations = R.style.CustomActivityAnimation
-        dialog.window?.setGravity(Gravity.BOTTOM)
+        // Tu código para mostrar el diálogo flotante
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        TODO("Not yet implemented")
+    private fun logoutUser() {
+        // Realiza aquí las acciones necesarias para cerrar sesión, por ejemplo, en Firebase.
+        // Ejemplo de cierre de sesión en Firebase:
+        FirebaseAuth.getInstance().signOut()
+
+        // Redirige al usuario a la pantalla de inicio de sesión o la pantalla principal.
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()  // Esto cierra la actividad actual, evitando que el usuario retroceda a la sesión cerrada.
     }
     override fun onBackPressed() {
         val alertDialogBuilder = AlertDialog.Builder(this)
@@ -133,7 +98,20 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
     }
-
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.cerrarSesion -> {
+                logoutUser()
+                drawerLayout.closeDrawer(GravityCompat.START) // Cierra el cajón después de la selección.
+                return true
+            }
+            R.id.CONFentradas -> {
+                replaceFragment(AdmConfigFragment())
+                drawerLayout.closeDrawer(GravityCompat.START) // Cierra el cajón después de la selección.
+                return true
+            }
+            else -> return false
+        }
+    }
 }
-
 

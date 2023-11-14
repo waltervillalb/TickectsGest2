@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="60dp">
+
+        <!-- Nombre del evento -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/EDTnombreEvento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre del evento" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Tipo de evento (usar Spinner) -->
+        <!-- Descripción -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/EDTdescripcion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Descripción" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ubicación -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/EDTubicacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Ubicación" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Hora del evento -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/EDThora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Hora del evento" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Duración del evento -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/EDTduracion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Duración del evento" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <Spinner
+            android:id="@+id/spinnerEventType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Seleccionar tipo de evento"
+            android:padding="25dp"
+            />
+        <!-- Cargar Flyer -->
+
+
+        <!-- Vista previa de la imagen cargada (inicialmente invisible) -->
+        <ImageView
+            android:id="@+id/imageViewFlyerPreview"
+            android:layout_width="200dp"
+            android:layout_height="168dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY"
+            android:src="@drawable/placeholder"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/buttonLoadFlyer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cargar Flyer" />
+
+        <!-- Botón para guardar el evento (cuando todos los campos estén completos) -->
+        <Button
+            android:id="@+id/buttonSaveEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Evento"/>
+    </LinearLayout>
+</ScrollView>

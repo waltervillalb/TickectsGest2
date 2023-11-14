@@ -25,7 +25,6 @@
             android:text="@string/createUser_titulo" />
 
         <TextView
-            android:id="@+id/tv_text_createUser"
             style="@style/subtitulo_createUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +32,6 @@
             android:text="@string/text_subtitle_createUser" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_nameCreateUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -48,7 +46,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_apellidoCreateUser"
             style="@style/text_input_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +99,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_celular"
             style="@style/text_input_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,7 +115,6 @@
                 android:inputType="phone"/>
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_numeroCI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -131,13 +126,12 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/numeroCI"
                 android:layout_gravity="center_horizontal"
-                android:inputType="textEmailAddress"
+                android:inputType="phone"
                 android:textAlignment="center"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_correo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -154,7 +148,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/titulo_passw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"

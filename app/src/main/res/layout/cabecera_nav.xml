@@ -13,14 +13,12 @@
         android:layout_height="wrap_content"
         android:src="@drawable/logointer"/>
     <TextView
-        android:id="@+id/NombreUsuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Walter Villalba"
         android:textColor="@color/white"
         android:textStyle="bold"/>
     <TextView
-        android:id="@+id/NombreCorreo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="contact@androidknowledge.com"
