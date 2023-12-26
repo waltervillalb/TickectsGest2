@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -23,12 +22,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+
 class CreateUserActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     lateinit var datePickerDialog: DatePickerDialog
     private lateinit var FechaRegistro: EditText
     var hayErrores = true
     private var verificationId: String? = null
+    private var uidUsuario: String? = null
 
 
     @SuppressLint("MissingInflatedId", "SuspiciousIndentation")
@@ -66,46 +67,12 @@ class CreateUserActivity : AppCompatActivity() {
         }
 
 
-
-
-
         val btnEnviarRegistro = findViewById<Button>(R.id.btnContinuarRegistro)
         btnEnviarRegistro.setOnClickListener {
             if (hayErrores) {
-               //hay errores, mostrar mensaje y no hacer nada
-              Toast.makeText(this, "Por favor, ingrese información válida en los datos ingresados anteriormente", Toast.LENGTH_SHORT).show()
-           } else {
-                enviarCodigo()
-                val dialogView = layoutInflater.inflate(R.layout.validatephone_number, null)
-                val codigoEditText = dialogView.findViewById<EditText>(R.id.edt_code)
-                val validarButton = dialogView.findViewById<Button>(R.id.btn_validar)
-                val crearUsuarioButton = dialogView.findViewById<Button>(R.id.btn_CrearUsuario)
-
-            val alertDialog = AlertDialog.Builder(this)
-                .setTitle("Introducir Código")
-                .setView(dialogView)
-                .create()
-
-            val dialog = alertDialog.show()
-
-            dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
-                val codigo = codigoEditText.text.toString()
-                val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
-                signInWithPhoneAuthCredential(credential, validarButton, crearUsuarioButton)
-                // Cerrar el diálogo después de validar el código
-            }
-
-                dialogView.findViewById<Button>(R.id.btn_CrearUsuario).setOnClickListener {
-                    val nombre = findViewById<EditText>(R.id.etNombre).text.toString().trim()
-                    val apellido = findViewById<EditText>(R.id.etApellido).text.toString().trim()
-                    val telefono = findViewById<EditText>(R.id.etNumeroCelular).text.toString().trim()
-                    val numeroCI = findViewById<EditText>(R.id.etNumeroCi).text.toString().trim()
-                    val genero = findViewById<Spinner>(R.id.spGenero).selectedItem.toString()
-                    val fechanac = FechaRegistro.text.toString().trim()
-                    val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
-                    saveUserData(nombre, apellido, telefono, numeroCI, genero, fechanac, email)
-                    // Cerrar el diálogo después de crear el usuario
-                }
+                Toast.makeText(this, "Por favor, ingrese información válida en los datos ingresados anteriormente", Toast.LENGTH_SHORT).show()
+            } else {
+                mostrarPopUpVerificacionTelefono()
             }
         }
         validarTelefono()
@@ -117,12 +84,54 @@ class CreateUserActivity : AppCompatActivity() {
         validarContrasena()
         validarApellido()
     }
+    private fun mostrarPopUpVerificacionEmail() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Verificar Correo Electrónico")
+        builder.setMessage("Por favor, verifica tu correo electrónico para continuar.")
+        builder.setCancelable(false)
 
+        // Agregar un botón para reintentar la verificación
+        builder.setPositiveButton("Verificar") { _, _ ->
+            refrescarEstadoUsuarioYVerificar()
+        }
 
+        val dialog = builder.create()
+        dialog.show()
+    }
+    private fun refrescarEstadoUsuarioYVerificar() {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.reload()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                if (user.isEmailVerified) {
+                    crearUsuarioEnFirestore()
+                } else {
+                    Toast.makeText(this, "Por favor, verifica nuevamente tu correo electrónico", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Error al actualizar el estado del usuario.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun mostrarPopUpVerificacionTelefono() {
+        enviarCodigo()
+        val dialogView = layoutInflater.inflate(R.layout.validatephone_number, null)
+        val codigoEditText = dialogView.findViewById<EditText>(R.id.edt_code)
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Introducir Código")
+            .setView(dialogView)
+            .create()
+
+        alertDialog.show()
+
+        dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
+            val codigo = codigoEditText.text.toString()
+            val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
+            signInWithPhoneAuthCredential(credential)
+            // Cerrar el diálogo después de validar el código
+        }
+    }
     private fun enviarCodigo() {
-        val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
-        val password = findViewById<EditText>(R.id.etPasswordCreateUser).text.toString().trim()
-        createUserWithEmailAndPassword(email, password)
         val phoneNumber = findViewById<EditText>(R.id.etNumeroCelular).text.toString().trim()
         if (phoneNumber.isNotEmpty()) {
             val options = PhoneAuthOptions.newBuilder(auth)
@@ -133,14 +142,12 @@ class CreateUserActivity : AppCompatActivity() {
                     override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                         // No se requiere ninguna acción aquí si solo se desea enviar el código de verificación
                     }
-
                     override fun onVerificationFailed(exception: FirebaseException) {
                         // Error al enviar el código de seguridad
                         Toast.makeText(
                             this@CreateUserActivity, "Error: $exception", Toast.LENGTH_SHORT
                         ).show()
                     }
-
                     override fun onCodeSent(
                         verificationId: String,
                         token: PhoneAuthProvider.ForceResendingToken
@@ -168,6 +175,124 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
 
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        FirebaseAuth.getInstance().signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // La validación del código SMS fue exitosa, proceder a crear el usuario en Firestore
+                    val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
+                    val password = findViewById<EditText>(R.id.etPasswordCreateUser).text.toString().trim()
+                    createUserWithEmailAndPassword(email, password)
+                } else {
+                    // La verificación del código SMS falló
+                    Toast.makeText(this, "La verificación del código SMS falló", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
+    private fun crearUsuarioEnFirestore() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val nombre = findViewById<EditText>(R.id.etNombre).text.toString().trim()
+        val apellido = findViewById<EditText>(R.id.etApellido).text.toString().trim()
+        val telefono = findViewById<EditText>(R.id.etNumeroCelular).text.toString().trim()
+        val numeroCI = findViewById<EditText>(R.id.etNumeroCi).text.toString().trim()
+        val genero = findViewById<Spinner>(R.id.spGenero).selectedItem.toString()
+        val fechanac = FechaRegistro.text.toString().trim()
+        val email = findViewById<EditText>(R.id.etEmail).text.toString().trim()
+
+        // Almacena el UID del usuario actual en la variable global
+        uidUsuario = user?.uid
+
+        uidUsuario?.let {
+            saveUserData(nombre, apellido, telefono, numeroCI, genero, fechanac, email, it)
+        } ?: run {
+            Toast.makeText(this, "Error: No se pudo obtener el UID del usuario", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveUserData(nombre: String, apellido: String, telefono: String, numeroCI: String, genero: String, fechanac: String, email: String, uid: String) {
+        val userData = hashMapOf(
+            "nombre" to nombre,
+            "apellido" to apellido,
+            "telefono" to telefono,
+            "numeroci" to numeroCI,
+            "genero" to genero,
+            "fechanacimiento" to fechanac,
+            "correo" to email,
+            "rol" to "Usuario"
+        )
+        FirebaseFirestore.getInstance().collection("users").document(uid).set(userData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al registrar el usuario", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+    private fun createUserWithEmailAndPassword(email: String, password: String) {
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // No es necesario almacenar el UID en una variable global, puedes obtenerlo directamente
+                    val user = FirebaseAuth.getInstance().currentUser
+                    uidUsuario = user?.uid
+                    if (user != null) {
+                        // Usuario creado exitosamente
+                        sendEmailVerification(user)
+                    } else {
+                        Toast.makeText(this, "Error: El usuario o el UID son nulos", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    handleFirebaseAuthError(task.exception)
+                }
+            }
+    }
+
+    private fun sendEmailVerification(user: FirebaseUser) {
+        user.sendEmailVerification().addOnCompleteListener { verificationTask ->
+            if (verificationTask.isSuccessful) {
+                Toast.makeText(this, "Se envió un correo de verificación a ${user.email}", Toast.LENGTH_SHORT).show()
+                // Aquí puedes mostrar el pop-up para verificar el correo electrónico
+                mostrarPopUpVerificacionEmail()
+            } else {
+                Toast.makeText(this, "Error al enviar el correo de verificación", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun handleFirebaseAuthError(exception: Exception?) {
+        Toast.makeText(this, "Error al crear el usuario", Toast.LENGTH_SHORT).show()
+
+        when (exception) {
+            is FirebaseAuthUserCollisionException -> {
+                // El correo electrónico ya está registrado
+                Toast.makeText(
+                    this,
+                    "Este correo electrónico ya está registrado. Por favor, utiliza otro correo electrónico",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is FirebaseAuthWeakPasswordException -> {
+                // La contraseña es demasiado débil
+                Toast.makeText(
+                    this,
+                    "La contraseña debe tener al menos 6 caracteres. Por favor, intenta con otra contraseña",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else -> {
+                // Otros errores
+                Toast.makeText(
+                    this,
+                    "Ocurrió un error. Por favor, intenta más tarde",
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.e("FirebaseAuthError", exception?.message ?: "")
+            }
+        }
+    }
     private fun validarContrasena() {
         val passwordEditText = findViewById<EditText>(R.id.etPasswordCreateUser)
 
@@ -205,7 +330,7 @@ class CreateUserActivity : AppCompatActivity() {
         val emailEditText = findViewById<EditText>(R.id.etEmail)
 
         if (emailEditText.text.toString().isEmpty()) {
-            emailEditText.error = "Ingrese una contraseña"
+            emailEditText.error = "Ingrese un correo"
             hayErrores = true
         }
 
@@ -518,126 +643,7 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
 
-    private fun signInWithPhoneAuthCredential(
-        credential: PhoneAuthCredential,
-        validarButton: Button,
-        crearUsuarioButton: Button
-    ) {
-        FirebaseAuth.getInstance().signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    validarButton.visibility = View.GONE // Ocultar el botón de Validar
-                    crearUsuarioButton.visibility = View.VISIBLE
-                    Toast.makeText(this, "Verificacion Exitosa!", Toast.LENGTH_SHORT).show()
-                } else {
-                    // La verificación del código SMS falló
-                    Toast.makeText(
-                        this, "La verificación del código SMS falló", Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-    }
 
-
-    private fun createUserWithEmailAndPassword(email: String, password: String) {
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = FirebaseAuth.getInstance().currentUser
-                    sendEmailVerification(user)
-                } else {
-                    handleFirebaseAuthError(task.exception)
-                }
-            }
-    }
-
-
-    private fun sendEmailVerification(user: FirebaseUser?) {
-        user?.sendEmailVerification()
-            ?.addOnCompleteListener { verificationTask ->
-                if (verificationTask.isSuccessful) {
-                    // El correo de verificación se envió exitosamente
-                    Toast.makeText(
-                        this,
-                        "Se envió un correo de verificación a ${user.email}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this,
-                        "Error al enviar el correo de verificación",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-    }
-
-
-    private fun saveUserData(
-        nombre: String,
-        apellido: String,
-        telefono: String,
-        numeroCI: String,
-        genero: String,
-        fechanac: String,
-        email: String
-    ) {
-        val user = FirebaseAuth.getInstance().currentUser
-        val uid = user!!.uid
-        val userData = hashMapOf(
-            "nombre" to nombre,
-            "apellido" to apellido,
-            "telefono" to telefono,
-            "numeroci" to numeroCI,
-            "genero" to genero,
-            "fechanacimiento" to fechanac,
-            "correo" to email,
-            "rol" to "Usuario"
-        )
-        val db = FirebaseFirestore.getInstance()
-        db.collection("users").document(uid).set(userData)
-            .addOnSuccessListener {
-                // Los datos se guardaron exitosamente en Firestore
-                Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener {
-                // Ocurrió un error al guardar los datos en Firestore
-                Toast.makeText(this, "Error al registrar el usuario", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-
-    private fun handleFirebaseAuthError(exception: Exception?) {
-        Toast.makeText(this, "Error al crear el usuario", Toast.LENGTH_SHORT).show()
-
-        when (exception) {
-            is FirebaseAuthUserCollisionException -> {
-                // El correo electrónico ya está registrado
-                Toast.makeText(
-                    this,
-                    "Este correo electrónico ya está registrado. Por favor, utiliza otro correo electrónico",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            is FirebaseAuthWeakPasswordException -> {
-                // La contraseña es demasiado débil
-                Toast.makeText(
-                    this,
-                    "La contraseña debe tener al menos 6 caracteres. Por favor, intenta con otra contraseña",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            else -> {
-                // Otros errores
-                Toast.makeText(
-                    this,
-                    "Ocurrió un error. Por favor, intenta más tarde",
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.e("FirebaseAuthError", exception?.message ?: "")
-            }
-        }
-    }
 
     private fun validarNumeroCI() {
         val ciEditText = findViewById<EditText>(R.id.etNumeroCi)

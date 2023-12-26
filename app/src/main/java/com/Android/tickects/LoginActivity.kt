@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.Android.tickects.Dialogs.userId
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -14,7 +15,6 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var authStateLister: FirebaseAuth.AuthStateListener
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -23,8 +23,6 @@ class LoginActivity : AppCompatActivity() {
 
         val txtEmail: TextView = findViewById(R.id.text_email)
         val txtPssw: TextView = findViewById(R.id.text_password)
-        val email = txtEmail.text.toString().trim()
-        val password = txtPssw.text.toString().trim()
         firebaseAuth = Firebase.auth
 
         //validar Boton de Olvidaste tu contraseña
@@ -68,6 +66,8 @@ class LoginActivity : AppCompatActivity() {
              task ->
             if(task.isSuccessful) {
                 val user = firebaseAuth.currentUser
+                val id= user?.uid ?: ""
+                userId.iduser=id
                 Toast.makeText(baseContext, "operación exitosa", Toast.LENGTH_SHORT).show()
                 //aqui vamos a ir a la pantalla Home
                 val i = Intent(this, HomeActivity::class.java)

@@ -1,11 +1,13 @@
 package com.Android.tickects
 
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
     private lateinit var fab: FloatingActionButton
@@ -59,12 +62,41 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             }
             true
         }
-        fab.setOnClickListener {
+        /*fab.setOnClickListener {
             Log.d("ClickEvent", "Floating Action Button Clicked!")
             val fragment = addEntradasFragment()
             supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).addToBackStack(null).commit()
-        }
+        }*/
         replaceFragment(HomeFragment())
+
+
+        val db = FirebaseFirestore.getInstance()
+
+// Obtén el UID del usuario utilizando tu clase userId
+        val uid = userId.iduser
+
+        db.collection("users").document(uid)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val nombre = documentSnapshot.getString("nombre")
+                    val correo = documentSnapshot.getString("correo")
+
+                    // Actualiza los TextViews con los datos obtenidos
+                    val nombreTextView = findViewById<TextView>(R.id.nombre_Cabecera)
+                    val correoTextView = findViewById<TextView>(R.id.correo_cabecera)
+
+                    nombreTextView.text = nombre
+                    correoTextView.text = correo
+                } else {
+                    // El documento no existe
+                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Manejar errores si la consulta a la base de datos falla
+                Log.e(TAG, "Error al obtener datos del usuario: $exception")
+            }
     }
 
     private fun replaceFragment(fragment: Fragment) {
