@@ -1,5 +1,6 @@
 package com.Android.tickects.Fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.Android.tickects.R
 import com.Android.tickects.eventoAdapter.Entradas
 import com.Android.tickects.eventoAdapter.EntradasAdapter
-import com.google.firebase.auth.FirebaseAuth
+import com.Android.tickects.qr_generator
 import com.google.firebase.firestore.*
 
 
@@ -39,13 +40,18 @@ private const val ARG_PARAM2 = "param2"
 
             entradaArrayList = arrayListOf()
 
-            entradasadapter = EntradasAdapter(entradaArrayList)
+            // Inicializa el adaptador con el listener de clics
+            entradasadapter = EntradasAdapter(entradaArrayList) { entradaId ->
+                // Lógica a ejecutar cuando se presiona el botón "Ver"
+                abrirDetalleEntrada(entradaId as String)
+            }
             recyclerView.adapter = entradasadapter
 
             EventChangeListener()
 
             return view
         }
+
 
         private fun EventChangeListener() {
             db = FirebaseFirestore.getInstance()
@@ -68,5 +74,11 @@ private const val ARG_PARAM2 = "param2"
             }.addOnFailureListener { e ->
                 Log.e("Firestore Error", e.message.toString())
             }
+        }
+        private fun abrirDetalleEntrada(entradaId: String) {
+            // Aquí puedes iniciar una nueva actividad y pasarle el ID de la entrada como extra
+            val intent = Intent(context, qr_generator::class.java)
+            intent.putExtra("EXTRA_ENTRADA_ID", entradaId)
+            startActivity(intent)
         }
     }
