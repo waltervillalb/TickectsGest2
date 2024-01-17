@@ -1,59 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Dialogs.HomeFragment"
     android:theme="@style/Theme.AppCompat.Light"
     android:paddingTop="50dp">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:paddingTop="50dp">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/image1"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewEntradas"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/placeholder" />
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <TextView
-            android:id="@+id/eventoNombre1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nombre del Evento"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
-
-        <TextView
-            android:id="@+id/horaFecha"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha y Hora"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp" />
-
-        <TextView
-            android:id="@+id/tipoEvento"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tipo de Evento"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"/>
-
-        <TextView
-            android:id="@+id/ubicacion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ubicación"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"/>
-    </LinearLayout>
-
+    </RelativeLayout>
 </FrameLayout>

@@ -1,4 +1,4 @@
-package com.Android.tickects.Dialogs
+package com.Android.tickects.Fragments
 
 import android.app.Activity
 import android.content.Intent
