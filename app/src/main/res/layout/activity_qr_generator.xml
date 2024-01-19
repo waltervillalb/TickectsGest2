@@ -1,9 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="25dp"
     tools:context=".qr_generator">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Código QR -->
+    <ImageView
+        android:id="@+id/img_QRCode"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+   <!-- Token -->
+    <TextView
+        android:id="@+id/tv_id_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_QRCode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="Token"
+        android:textSize="16sp" />
+
+    <!-- Contador -->
+    <TextView
+        android:id="@+id/tv_cronometro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_id_qr"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="20"
+        android:textSize="24sp" />
+
+    <!-- ProgressBar -->
+    <ProgressBar
+        android:id="@+id/progressBar_time"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_cronometro"
+        android:max="30"
+        android:progress="30"
+        android:layout_marginTop="8dp"
+        android:progressTint="#FF6200EE" />
+
+    <!-- Separador -->
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/progressBar_time"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/darker_gray"/>
+
+    <!-- Datos del Usuario y del Evento -->
+    <LinearLayout
+        android:id="@+id/userEventDataLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/separator"
+        android:layout_marginTop="12dp">
+
+        <!-- Datos del Usuario -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/progressBar_time"
+            android:layout_marginTop="12dp">
+
+            <!-- TextView para Nombre -->
+            <TextView
+                android:id="@+id/tvNombre"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Nombre: Juan"
+                android:textSize="16sp" />
+
+            <!-- TextView para Apellido -->
+            <TextView
+                android:id="@+id/tvApellido"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Apellido: Pérez"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/tvApellido"
+            android:layout_marginTop="8dp">
+
+            <!-- TextView para Género -->
+            <TextView
+                android:id="@+id/tvGenero"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Género: Masculino"
+                android:textSize="16sp" />
+
+            <!-- TextView para Número de CI -->
+            <TextView
+                android:id="@+id/tvCi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Número de CI: 12345678"
+                android:textSize="16sp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/tvNumeroTelefono"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Número de Telefono: 12345678"
+            android:textSize="16sp" />
+        <!-- Separador entre Usuario y Evento -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="8dp"
+            android:background="@android:color/darker_gray" />
+
+        <!-- Datos del Evento -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/tvApellido"
+            android:layout_marginTop="8dp">
+
+            <!-- TextView para Género -->
+            <TextView
+                android:id="@+id/tvNombreEntrada"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+            android:text="Evento: Concierto"
+            android:textSize="16sp" />
+
+            <!-- TextView para Fecha -->
+            <TextView
+                android:id="@+id/tvFecha"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+            android:text="Fecha: 10/10/2023"
+            android:textSize="16sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/tvFecha"
+        android:layout_marginTop="8dp">
+
+        <!-- TextView para Ubicación -->
+        <TextView
+            android:id="@+id/tvUbicacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Ubicación: Estadio Nacional"
+            android:textSize="16sp" />
+
+        <!-- TextView para Hora -->
+        <TextView
+            android:id="@+id/tvHora"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Hora: 22:30 hs"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnCompartir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="193dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/custom_button"
+        android:text="Compartir entrada" />
+    </RelativeLayout>
+
+

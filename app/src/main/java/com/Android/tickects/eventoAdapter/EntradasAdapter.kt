@@ -1,5 +1,6 @@
 package com.Android.tickects.eventoAdapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,8 @@ class EntradasAdapter(
         // Asume que tienes un botón en tu item_layout con ID btnVer
         val btnVer: Button = holder.itemView.findViewById(R.id.btnVer)
         btnVer.setOnClickListener {
-            onItemClicked(entrada.idEntrada) // Suponiendo que Entradas tiene un campo 'idEntrada'
+            Log.d("EntradasAdapter", "ID de Entrada al hacer clic: ${entrada.idEntrada}")
+            onItemClicked(entrada.idEntrada)
         }
     }
 

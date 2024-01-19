@@ -65,6 +65,7 @@ private const val ARG_PARAM2 = "param2"
                             .addOnSuccessListener { entradaDoc ->
                                 val entrada = entradaDoc.toObject(Entradas::class.java)
                                 if (entrada != null) {
+                                    entrada.idEntrada = entradaDoc.id // Asignar el ID del documento
                                     entradaArrayList.add(entrada)
                                     entradasadapter.notifyDataSetChanged()
                                 }
@@ -76,7 +77,6 @@ private const val ARG_PARAM2 = "param2"
             }
         }
         private fun abrirDetalleEntrada(entradaId: String) {
-            // Aquí puedes iniciar una nueva actividad y pasarle el ID de la entrada como extra
             val intent = Intent(context, qr_generator::class.java)
             intent.putExtra("EXTRA_ENTRADA_ID", entradaId)
             startActivity(intent)
