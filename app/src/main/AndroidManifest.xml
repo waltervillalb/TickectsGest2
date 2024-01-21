@@ -17,6 +17,9 @@
         android:theme="@style/Theme.TickectsGest"
         tools:targetApi="31">
         <activity
+            android:name=".Escaneo_de_qr"
+            android:exported="false" />
+        <activity
             android:name=".qr_generator"
             android:exported="false" />
         <activity

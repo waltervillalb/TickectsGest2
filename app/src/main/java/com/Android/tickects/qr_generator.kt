@@ -8,20 +8,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.text.TextUtils
-import android.util.Log
-import android.widget.ImageView
 import android.os.CountDownTimer
+import android.text.Html
+import android.text.InputType
 import android.view.WindowManager
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.Android.tickects.Fragments.userId
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.UUID
 import com.google.zxing.BarcodeFormat
@@ -59,7 +58,6 @@ class qr_generator : AppCompatActivity() {
         // Ahora que entradaId está inicializado, llama a cargarDatosUsuarioYEvento
         cargarDatosUsuarioYEvento(entradaId)
 
-        // Resto de tu código de inicialización...
         // condicion para pedir Permisos para acceder a los contenidos del telefono movil
         val permissionCheck =
             ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -68,6 +66,11 @@ class qr_generator : AppCompatActivity() {
                 this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 100
             )
+        }
+
+        val btnCompartir = findViewById<Button>(R.id.btnCompartir)
+        btnCompartir.setOnClickListener {
+            mostrarPopupCompartir()
         }
         //obtener el ID del usuario actual
         val user = FirebaseAuth.getInstance().currentUser
@@ -147,7 +150,7 @@ class qr_generator : AppCompatActivity() {
     private fun iniciarCronometro() {
         countdownTimer?.cancel() // Detén el contador si está en marcha
 
-        val tiempoTotal = 15000 // Duración total en milisegundos (ejemplo: 15 segundos)
+        val tiempoTotal = 50000 // Duración total en milisegundos (ejemplo: 15 segundos)
         progressBar.max = tiempoTotal / 1000 // Configura el máximo del ProgressBar
 
         // Crea un nuevo cronometro de 15 segundos con actualizaciones cada segundo
@@ -268,5 +271,134 @@ class qr_generator : AppCompatActivity() {
                 tvUbicacion.text = "Ubicación: $ubicacion"
             }
         }
+    }
+
+    private fun mostrarPopupCompartir() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Compartir Entrada")
+
+        // Configurar el input para el ID del usuario
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        // Configurar botones OK y Cancelar
+        builder.setPositiveButton("OK") { dialog, _ ->
+            val idUsuarioACompartir = input.text.toString()
+            confirmarCompartir(idUsuarioACompartir)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
+
+        builder.show()
+    }
+    private fun confirmarCompartir(idUsuarioACompartir: String) {
+        FirebaseFirestore.getInstance().collection("users").document(idUsuarioACompartir).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val nombre = document.getString("nombre") ?: ""
+                    val apellido = document.getString("apellido") ?: ""
+                    val mensajeConfirmacion = "¿Estás seguro de que quieres compartir con <b>$nombre</b> $apellido?"
+
+                    AlertDialog.Builder(this)
+                        .setTitle("Confirmar Compartir")
+                        .setMessage(Html.fromHtml(mensajeConfirmacion, Html.FROM_HTML_MODE_LEGACY))
+                        .setPositiveButton("Sí") { _, _ ->
+                            compartirEntrada(idUsuarioACompartir, entradaId)
+                        }
+                        .setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
+                        .show()
+                } else {
+                    Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al buscar el usuario", Toast.LENGTH_SHORT).show()
+            }
+    }
+    private fun compartirEntrada(idUsuarioDestinatario: String, entradaId: String) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userId = user?.uid
+
+        if (userId != null) {
+            // Registrar la acción de compartir en el historial del usuario remitente
+            agregarAHistorialTransacciones(userId, entradaId, "compartido")
+
+            // Eliminar la entrada y el token del usuario remitente en Realtime Database
+            eliminarEntradaYTokenDeRealtimeDatabase(userId, entradaId)
+
+            // Eliminar la entrada del usuario remitente en Firestore
+            eliminarEntradaDeFirestore(userId, entradaId)
+
+            // Agregar la entrada al usuario destinatario en Firestore
+            agregarEntradaAUsuarioDestinatario(idUsuarioDestinatario, entradaId)
+
+            finish()
+            onBackPressed()
+        } else {
+            Toast.makeText(this, "Error al obtener el ID del usuario", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun agregarAHistorialTransacciones(userId: String, entradaId: String, accion: String) {
+        val dbFirestore = FirebaseFirestore.getInstance()
+        val transaccion = hashMapOf(
+            "entradaID" to entradaId,
+            "accion" to accion,
+            "fecha" to FieldValue.serverTimestamp()
+        )
+        dbFirestore.collection("historialTransacciones").document(userId)
+            .collection("transacciones").add(transaccion)
+            .addOnSuccessListener { documentReference ->
+                Toast.makeText(applicationContext, "Transacción agregada al historial", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(applicationContext, "Error al agregar a historialTransacciones: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+    private fun eliminarEntradaYTokenDeRealtimeDatabase(userId: String, entradaId: String) {
+        val dbRealtime = FirebaseDatabase.getInstance()
+        val entradaRef = dbRealtime.getReference("users/$userId/$entradaId")
+
+        entradaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Eliminar el token y el ID de la entrada del usuario remitente en Realtime Database
+                entradaRef.removeValue().addOnSuccessListener { Toast.makeText(applicationContext, "Entrada y token eliminados de Realtime Database", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(applicationContext, "Error al eliminar entrada y token: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejar errores aquí
+            }
+        })
+    }
+    private fun eliminarEntradaDeFirestore(userId: String, entradaId: String) {
+        val dbFirestore = FirebaseFirestore.getInstance()
+        val entradaRef = dbFirestore.collection("users").document(userId)
+
+        // Suponiendo que 'entradasAdquiridas' es un array en Firestore
+        entradaRef.update("entradasAdquiridas", FieldValue.arrayRemove(entradaId))
+            .addOnSuccessListener {
+                Toast.makeText(applicationContext, "Entrada eliminada de Firestore", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(applicationContext, "Error al eliminar la entrada de Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun agregarEntradaAUsuarioDestinatario(idUsuarioDestinatario: String, entradaId: String) {
+        val dbFirestore = FirebaseFirestore.getInstance()
+        val entradasAdquiridasRef = dbFirestore.collection("users").document(idUsuarioDestinatario)
+
+        // Asumo que 'entradasAdquiridas' es un array en Firestore
+        entradasAdquiridasRef.update("entradasAdquiridas", FieldValue.arrayUnion(entradaId))
+            .addOnSuccessListener {
+                Toast.makeText(applicationContext, "Entrada agregada a las adquiridas del destinatario", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(applicationContext, "Error al agregar la entrada al destinatario: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }

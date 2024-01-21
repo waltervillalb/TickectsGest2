@@ -31,48 +31,60 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_textView"/>
 
 
-    <EditText
-        android:id="@+id/text_email"
-        android:layout_marginTop="50dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_email_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:hint="@string/email_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_text_url_login"
-        app:startIconDrawable="@drawable/baseline_email_24" />
+        app:layout_constraintTop_toBottomOf="@id/tv_text_url_login"
+        android:background="@drawable/background_input">
+
+        <EditText
+            android:id="@+id/text_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:startIconDrawable="@drawable/baseline_email_24" />
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-    <EditText
-        android:id="@+id/text_password"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:hint="@string/email_password"
-        android:inputType="textPassword"
+        app:endIconMode="password_toggle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_email"
-        app:startIconDrawable="@drawable/baseline_password_24" />
+        app:layout_constraintTop_toBottomOf="@+id/text_email_layout"
+        android:background="@drawable/background_input">
 
+        <EditText
+            android:id="@+id/text_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            app:startIconDrawable="@drawable/baseline_password_24" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/tv_recup_password"
         style="@style/subtitulo_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:clickable="true"
         android:text="@string/recuperar_contra"
         android:textAlignment="textEnd"
         android:textColor="@color/color3"
         android:textSize="15dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutPassword"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_password"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_login"

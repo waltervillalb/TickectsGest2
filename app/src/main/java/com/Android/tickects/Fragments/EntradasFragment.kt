@@ -20,65 +20,65 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-    class EntradasFragment : Fragment() {
+class EntradasFragment : Fragment() {
 
-        private lateinit var recyclerView: RecyclerView
-        private lateinit var entradaArrayList: ArrayList<Entradas>
-        private lateinit var entradasadapter: EntradasAdapter
-        private lateinit var db: FirebaseFirestore
-        val usuarioId = userId.iduser
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var entradaArrayList: ArrayList<Entradas>
+    private lateinit var entradasadapter: EntradasAdapter
+    private lateinit var db: FirebaseFirestore
+    val usuarioId = userId.iduser
 
-        override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View? {
-            val view = inflater.inflate(R.layout.fragment_entradas, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_entradas, container, false)
 
-            recyclerView = view.findViewById(R.id.recyclerViewEntradas)
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            recyclerView.setHasFixedSize(true)
+        recyclerView = view.findViewById(R.id.recyclerViewEntradas)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.setHasFixedSize(true)
 
-            entradaArrayList = arrayListOf()
+        entradaArrayList = arrayListOf()
 
-            // Inicializa el adaptador con el listener de clics
-            entradasadapter = EntradasAdapter(entradaArrayList) { entradaId ->
-                // Lógica a ejecutar cuando se presiona el botón "Ver"
-                abrirDetalleEntrada(entradaId as String)
-            }
-            recyclerView.adapter = entradasadapter
-
-            EventChangeListener()
-
-            return view
+        // Inicializa el adaptador con el listener de clics
+        entradasadapter = EntradasAdapter(entradaArrayList) { entradaId ->
+            // Lógica a ejecutar cuando se presiona el botón "Ver"
+            abrirDetalleEntrada(entradaId as String)
         }
+        recyclerView.adapter = entradasadapter
+
+        EventChangeListener()
+
+        return view
+    }
 
 
-        private fun EventChangeListener() {
-            db = FirebaseFirestore.getInstance()
-            val userRef = db.collection("users").document(usuarioId)
+    private fun EventChangeListener() {
+        db = FirebaseFirestore.getInstance()
+        val userRef = db.collection("users").document(usuarioId)
 
-            userRef.get().addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val entradasIds = document.get("entradasAdquiridas") as? List<String> ?: listOf()
-                    for (entradaId in entradasIds) {
-                        db.collection("entradas").document(entradaId).get()
-                            .addOnSuccessListener { entradaDoc ->
-                                val entrada = entradaDoc.toObject(Entradas::class.java)
-                                if (entrada != null) {
-                                    entrada.idEntrada = entradaDoc.id // Asignar el ID del documento
-                                    entradaArrayList.add(entrada)
-                                    entradasadapter.notifyDataSetChanged()
-                                }
+        userRef.get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                val entradasIds = document.get("entradasAdquiridas") as? List<String> ?: listOf()
+                for (entradaId in entradasIds) {
+                    db.collection("entradas").document(entradaId).get()
+                        .addOnSuccessListener { entradaDoc ->
+                            val entrada = entradaDoc.toObject(Entradas::class.java)
+                            if (entrada != null) {
+                                entrada.idEntrada = entradaDoc.id // Asignar el ID del documento
+                                entradaArrayList.add(entrada)
+                                entradasadapter.notifyDataSetChanged()
                             }
-                    }
+                        }
                 }
-            }.addOnFailureListener { e ->
-                Log.e("Firestore Error", e.message.toString())
             }
-        }
-        private fun abrirDetalleEntrada(entradaId: String) {
-            val intent = Intent(context, qr_generator::class.java)
-            intent.putExtra("EXTRA_ENTRADA_ID", entradaId)
-            startActivity(intent)
+        }.addOnFailureListener { e ->
+            Log.e("Firestore Error", e.message.toString())
         }
     }
+    private fun abrirDetalleEntrada(entradaId: String) {
+        val intent = Intent(context, qr_generator::class.java)
+        intent.putExtra("EXTRA_ENTRADA_ID", entradaId)
+        startActivity(intent)
+    }
+}

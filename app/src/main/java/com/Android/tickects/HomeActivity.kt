@@ -56,7 +56,7 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             when (item.itemId) {
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.shorts -> replaceFragment(EntradasFragment())
-                R.id.subscriptions -> replaceFragment(EventorFragment())
+                R.id.Historial -> replaceFragment(HistorialFragment())
                 R.id.library -> replaceFragment(ContactosFragment())
 
             }
@@ -74,6 +74,36 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
 // Obtén el UID del usuario utilizando tu clase userId
         val uid = userId.iduser
+
+        db.collection("users").document(uid)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val rol = documentSnapshot.getString("rol")
+
+                    // Verifica si el rol es igual a "Administrador"
+                    if (rol == "Administrador") {
+                        // Si el rol es Administrador, muestra el FAB
+                        fab.visibility = View.VISIBLE
+                        fab.setOnClickListener {
+                            val intent = Intent(this, Escaneo_de_qr::class.java)
+                            startActivity(intent)
+                        }
+                    } else {
+                        // Si el rol no es Administrador, oculta el FAB
+                        fab.visibility = View.GONE
+                    }
+
+                    // Resto del código...
+                } else {
+                    // El documento no existe
+                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Manejar errores si la consulta a la base de datos falla
+                Log.e(TAG, "Error al obtener datos del usuario: $exception")
+            }
 
         db.collection("users").document(uid)
             .get()

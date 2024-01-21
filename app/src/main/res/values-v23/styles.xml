@@ -5,4 +5,7 @@
 
     <style name="text_input_name">Nombre</style>
 
+    <style name="CustomProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="colorAccent">@android:color/white</item>
+    </style>
 </resources>
