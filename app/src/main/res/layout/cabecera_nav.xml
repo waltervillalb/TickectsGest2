@@ -3,15 +3,34 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
-    android:gravity="bottom"
-    android:padding="16dp"
+    android:layout_height="180dp"
+    android:paddingTop="25dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp"
     android:background="@drawable/headerbkg"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logointer"/>
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="0dp"
+        android:src="@drawable/logointer" />
+
+    <LinearLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+android:gravity="center_vertical">
+
+<LinearLayout
+    android:layout_width="10dp"
+    android:layout_height="50dp"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    >
+
     <TextView
         android:id="@+id/nombre_Cabecera"
         android:layout_width="wrap_content"
@@ -19,12 +38,20 @@
         android:text="Walter Villalba"
         android:textColor="@color/white"
         android:textStyle="bold"/>
+
     <TextView
         android:id="@+id/correo_cabecera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="contact@androidknowledge.com"
         android:textColor="@color/white"
-        android:textSize="14sp"
-        android:layout_marginBottom="16dp"/>
+        android:textSize="14sp"/>
 </LinearLayout>
+
+<ImageView
+    android:id="@+id/btnCopyInfo"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/baseline_content_copy_24"/>
+</LinearLayout>
+    </LinearLayout>

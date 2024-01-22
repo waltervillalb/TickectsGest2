@@ -2,6 +2,7 @@ package com.Android.tickects
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,8 @@ class qr_generator : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var tvQrId: TextView
     private lateinit var entradaId: String
+    private lateinit var networkChangeReceiver: BroadcastReceiver
+    private var isConnected: Boolean = true
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
