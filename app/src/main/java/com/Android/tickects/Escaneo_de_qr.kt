@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -73,9 +74,8 @@ class Escaneo_de_qr : AppCompatActivity() {
 
                 for (uidSnapshot in dataSnapshot.children) {
                     val uid = uidSnapshot.key ?: continue
-                    val entradas = uidSnapshot.child("entradasAdquiridas").children
 
-                    for (entradaSnapshot in entradas) {
+                    for (entradaSnapshot in uidSnapshot.children) {
                         val entradaID = entradaSnapshot.key
                         val token = entradaSnapshot.child("token").getValue(String::class.java)
 
@@ -91,6 +91,7 @@ class Escaneo_de_qr : AppCompatActivity() {
                 if (uidEncontrado != null && entradaIDEncontrada != null) {
                     actualizarHistorial(uidEncontrado, entradaIDEncontrada)
                     eliminarEntradaAdquirida(uidEncontrado, entradaIDEncontrada)
+                    eliminarEntradaYTokenDeRealtimeDatabase(uidEncontrado, entradaIDEncontrada)
                 } else {
                     Toast.makeText(applicationContext, "Token no encontrado", Toast.LENGTH_SHORT).show()
                 }
@@ -101,7 +102,6 @@ class Escaneo_de_qr : AppCompatActivity() {
             }
         })
     }
-
     private fun actualizarHistorial(uid: String, entradaID: String) {
         val dbFirestore = FirebaseFirestore.getInstance()
         val transaccion = hashMapOf(
@@ -120,18 +120,20 @@ class Escaneo_de_qr : AppCompatActivity() {
             }
     }
 
-    private fun eliminarEntradaAdquirida(uid: String, entradaID: String) {
+    private fun eliminarEntradaAdquirida(uidEncontrado: String, entradaIDEncontrada: String) {
         val dbFirestore = FirebaseFirestore.getInstance()
-        val entradaRef = dbFirestore.collection("users").document(uid).collection("entradasAdquiridas").document(entradaID)
+        val entradaRef = dbFirestore.collection("users").document(uidEncontrado)
 
-        entradaRef.delete()
+        // Suponiendo que 'entradasAdquiridas' es un array en Firestore
+        entradaRef.update("entradasAdquiridas", FieldValue.arrayRemove(entradaIDEncontrada))
             .addOnSuccessListener {
-                Toast.makeText(applicationContext, "Entrada eliminada correctamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Entrada eliminada de Firestore", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(applicationContext, "Error al eliminar la entrada: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Error al eliminar la entrada de Firestore: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -145,5 +147,23 @@ class Escaneo_de_qr : AppCompatActivity() {
                 Toast.makeText(this, "Permiso de Cámara Denegado", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun eliminarEntradaYTokenDeRealtimeDatabase(uidEncontrado: String, entradaIDEncontrada: String) {
+        val dbRealtime = FirebaseDatabase.getInstance()
+        val entradaRef = dbRealtime.getReference("users/$uidEncontrado/$entradaIDEncontrada")
+
+        entradaRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Eliminar el token y el ID de la entrada del usuario remitente en Realtime Database
+                entradaRef.removeValue().addOnSuccessListener { Toast.makeText(applicationContext, "Entrada y token eliminados de Realtime Database", Toast.LENGTH_SHORT).show()
+                }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(applicationContext, "Error al eliminar entrada y token: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejar errores aquí
+            }
+        })
     }
 }

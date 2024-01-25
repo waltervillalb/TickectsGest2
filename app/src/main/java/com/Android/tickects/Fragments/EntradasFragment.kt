@@ -81,4 +81,5 @@ class EntradasFragment : Fragment() {
         intent.putExtra("EXTRA_ENTRADA_ID", entradaId)
         startActivity(intent)
     }
+
 }

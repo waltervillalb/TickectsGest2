@@ -79,8 +79,29 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
 
         val db = FirebaseFirestore.getInstance()
+        val menu = navigationView.menu
+        val itemConfigEntradas = menu.findItem(R.id.CONFentradas)
+//verifica el rol para ocultar el item de configuracion entradas
+        val id = userId.iduser
+        db.collection("users").document(id)
+            .get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val rol = documentSnapshot.getString("rol")
+                    // Verifica si el rol es igual a "Administrador"
+                    itemConfigEntradas.isVisible = rol == "Administrador"
+                    // Resto del código...
+                } else {
+                    // El documento no existe
+                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Manejar errores si la consulta a la base de datos falla
+                Log.e(TAG, "Error al obtener datos del usuario: $exception")
+            }
 
-// Obtén el UID del usuario utilizando tu clase userId
+//oculta o muestra el boton mas de acuerdo al rol del usuario
         val uid = userId.iduser
 
         db.collection("users").document(uid)

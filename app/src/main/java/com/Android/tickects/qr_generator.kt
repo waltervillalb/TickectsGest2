@@ -153,7 +153,7 @@ class qr_generator : AppCompatActivity() {
     private fun iniciarCronometro() {
         countdownTimer?.cancel() // Detén el contador si está en marcha
 
-        val tiempoTotal = 50000 // Duración total en milisegundos (ejemplo: 15 segundos)
+        val tiempoTotal = 60000 // Duración total en milisegundos (ejemplo: 15 segundos)
         progressBar.max = tiempoTotal / 1000 // Configura el máximo del ProgressBar
 
         // Crea un nuevo cronometro de 15 segundos con actualizaciones cada segundo
@@ -404,4 +404,6 @@ class qr_generator : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Error al agregar la entrada al destinatario: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+
 }

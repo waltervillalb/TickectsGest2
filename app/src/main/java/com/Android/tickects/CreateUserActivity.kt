@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,6 +37,9 @@ class CreateUserActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
+
+
+        hayErrores = true
         auth = FirebaseAuth.getInstance()
         FechaRegistro = findViewById(R.id.etFechaNac)
         FechaRegistro.setOnClickListener {
@@ -69,13 +73,13 @@ class CreateUserActivity : AppCompatActivity() {
 
         val btnEnviarRegistro = findViewById<Button>(R.id.btnContinuarRegistro)
         btnEnviarRegistro.setOnClickListener {
-            if (hayErrores) {
+            if (existeAlgunError()) {
                 Toast.makeText(this, "Por favor, ingrese información válida en los datos ingresados anteriormente", Toast.LENGTH_SHORT).show()
             } else {
                 mostrarPopUpVerificacionTelefono()
             }
         }
-        validarTelefono()
+        //validarTelefono()
         validarCorreo()
         validarNombre()
         validarFechaNacimiento()
@@ -293,6 +297,12 @@ class CreateUserActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    //verificacion de errores en cada campo
+
+
+
     private fun validarContrasena() {
         val passwordEditText = findViewById<EditText>(R.id.etPasswordCreateUser)
 
@@ -524,32 +534,27 @@ class CreateUserActivity : AppCompatActivity() {
                     telefono.startsWith("9") -> "+595" + telefono
                     else -> telefono
                 }
-
                 // Validar que no esté vacío
                 if (telefonoModificado.isEmpty()) {
                     telefonoEditText.error = "El número de teléfono no puede estar vacío"
                     hayErrores = true
                     return
                 }
-
                 // Validar el formato del número de teléfono
                 if (!telefonoModificado.matches(telefonoRegex)) {
                     telefonoEditText.error = "El número de teléfono no es válido"
                     hayErrores = true
                     return
                 }
-
                 telefonoEditText.error = null
                 hayErrores = false
 
                 if (telefonoModificado != telefono) {
                     telefonoEditText.setText(telefonoModificado)
                 }
-
                 // Aquí pasamos telefonoEditText como argumento
-                //verificarTelefono(telefonoModificado, telefonoEditText)
+                verificarTelefono(telefonoModificado, telefonoEditText)
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // No se utiliza
             }
@@ -667,9 +672,6 @@ class CreateUserActivity : AppCompatActivity() {
                     hayErrores = true
                     return
                 } else {
-                    ciEditText.error = null
-                    hayErrores = false
-                    // Llamar a la función que verifica si el número de cédula ya existe
                     verificarNumeroCI(numeroCI, ciEditText)
                 }
             }
@@ -717,7 +719,7 @@ class CreateUserActivity : AppCompatActivity() {
         val codigoEditText = findViewById<EditText>(R.id.edt_code)
 
         if (codigoEditText.text.toString().isEmpty()) {
-            codigoEditText.error = "Ingrese un nombre válido"
+            codigoEditText.error = "Ingrese un codigo valido"
             hayErrores = true
         }
 
@@ -725,12 +727,9 @@ class CreateUserActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val nombre = s.toString().trim()
                 if (nombre.isEmpty()) {
-                    codigoEditText.error = "El nombre no puede estar vacío"
-                    hayErrores = true
+                    codigoEditText.error = "El campo no puede estar vacio"
+                    hayErrores = false
                     return
-                } else if (nombre.length < 5) {
-                    codigoEditText.error = "El nombre debe tener al menos 5 letras"
-                    hayErrores = true
                 } else {
                     codigoEditText.error = null
                     hayErrores = false
@@ -748,6 +747,55 @@ class CreateUserActivity : AppCompatActivity() {
             }
         })
     }
+    private fun existeAlgunError(): Boolean {
+        // Verificar si el campo de contraseña tiene un error
+        val passwordEditText = findViewById<EditText>(R.id.etPasswordCreateUser)
+        if (passwordEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de email tiene un error
+        val emailEditText = findViewById<EditText>(R.id.etEmail)
+        if (emailEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de nombre tiene un error
+        val nombreEditText = findViewById<EditText>(R.id.etNombre)
+        if (nombreEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de apellido tiene un error
+        val apellidoEditText = findViewById<EditText>(R.id.etApellido)
+        if (apellidoEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de teléfono tiene un error
+        val telefonoEditText = findViewById<EditText>(R.id.etNumeroCelular)
+        if (telefonoEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de número de CI tiene un error
+        val numeroCIEditText = findViewById<EditText>(R.id.etNumeroCi)
+        if (numeroCIEditText.error != null) {
+            return true
+        }
+
+        // Verificar si el campo de fecha de nacimiento tiene un error
+        val fechaNacEditText = findViewById<EditText>(R.id.etFechaNac)
+        if (fechaNacEditText.error != null) {
+            return true
+        }
+
+        // Agrega aquí verificaciones adicionales para otros campos si los hay
+
+        // Si llegamos aquí, significa que no hay errores visibles en los campos
+        return false
+    }
+
 }
 
 

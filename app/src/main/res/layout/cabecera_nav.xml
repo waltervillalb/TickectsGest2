@@ -4,10 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="180dp"
-    android:paddingTop="25dp"
-    android:paddingLeft="10dp"
+    android:paddingTop="30dp"
+    android:paddingLeft="5dp"
     android:paddingRight="20dp"
-    android:paddingBottom="20dp"
+    android:paddingBottom="15dp"
     android:background="@drawable/headerbkg"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
@@ -15,7 +15,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="10dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginBottom="10dp"
         android:src="@drawable/logointer" />
 
     <LinearLayout
