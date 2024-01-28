@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="spTipoGenero">
-        <item>Selecciona una opción</item>
+        <item>Seleccione su género</item>
         <item>Masculino</item>
         <item>Femenino</item>
     </string-array>

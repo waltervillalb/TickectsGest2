@@ -23,6 +23,7 @@ import com.Android.tickects.Fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -34,11 +35,13 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+
+        val analytics: FirebaseAnalytics
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -70,30 +73,24 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             }
             true
         }
-        /*fab.setOnClickListener {
-            Log.d("ClickEvent", "Floating Action Button Clicked!")
-            val fragment = addEntradasFragment()
-            supportFragmentManager.beginTransaction().replace(R.id.frame_layout, fragment).addToBackStack(null).commit()
-        }*/
+
         replaceFragment(HomeFragment())
 
 
         val db = FirebaseFirestore.getInstance()
         val menu = navigationView.menu
         val itemConfigEntradas = menu.findItem(R.id.CONFentradas)
-//verifica el rol para ocultar el item de configuracion entradas
+        //verifica el rol para ocultar el item de configuracion entradas
         val id = userId.iduser
         db.collection("users").document(id)
             .get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     val rol = documentSnapshot.getString("rol")
-                    // Verifica si el rol es igual a "Administrador"
-                    itemConfigEntradas.isVisible = rol == "Administrador"
-                    // Resto del código...
+                    if(rol == "Administrador")
+                    itemConfigEntradas.isVisible
                 } else {
                     // El documento no existe
-                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
                 }
             }
             .addOnFailureListener { exception ->
@@ -101,7 +98,7 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                 Log.e(TAG, "Error al obtener datos del usuario: $exception")
             }
 
-//oculta o muestra el boton mas de acuerdo al rol del usuario
+        //oculta o muestra el boton mas de acuerdo al rol del usuario
         val uid = userId.iduser
 
         db.collection("users").document(uid)
@@ -119,18 +116,14 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                             startActivity(intent)
                         }
                     } else {
-                        // Si el rol no es Administrador, oculta el FAB
+                        // Si el rol no es Administrador, oculta el boton +
                         fab.visibility = View.GONE
                     }
-
-                    // Resto del código...
                 } else {
                     // El documento no existe
-                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
                 }
             }
             .addOnFailureListener { exception ->
-                // Manejar errores si la consulta a la base de datos falla
                 Log.e(TAG, "Error al obtener datos del usuario: $exception")
             }
 
@@ -149,11 +142,9 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                     correoTextView.text = correo
                 } else {
                     // El documento no existe
-                    // Manejar el caso en el que no se encuentre el usuario en la base de datos
                 }
             }
             .addOnFailureListener { exception ->
-                // Manejar errores si la consulta a la base de datos falla
                 Log.e(TAG, "Error al obtener datos del usuario: $exception")
             }
     }
@@ -178,12 +169,9 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun showBottomDialog() {
-        // Tu código para mostrar el diálogo flotante
     }
 
     private fun logoutUser() {
-        // Realiza aquí las acciones necesarias para cerrar sesión, por ejemplo, en Firebase.
-        // Ejemplo de cierre de sesión en Firebase:
         FirebaseAuth.getInstance().signOut()
 
         // Redirige al usuario a la pantalla de inicio de sesión o la pantalla principal.

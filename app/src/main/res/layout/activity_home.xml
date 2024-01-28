@@ -41,13 +41,14 @@
                android:layout_height="wrap_content"
                android:id="@+id/bottomAppBar"
                android:layout_gravity="bottom"
+               android:background="@drawable/degradado_background"
                app:fabCradleMargin="10dp"
                app:fabCradleRoundedCornerRadius="50dp">
                <com.google.android.material.bottomnavigation.BottomNavigationView
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
                    android:id="@+id/bottomNavigationView"
-                   app:labelVisibilityMode="labeled"
+                   app:labelVisibilityMode="selected"
                    app:menu="@menu/buttom_menu"/>
            </com.google.android.material.appbar.CollapsingToolbarLayout>
 

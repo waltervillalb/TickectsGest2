@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,6 +39,8 @@ class CreateUserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_user)
 
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        supportActionBar?.hide()
 
         hayErrores = true
         auth = FirebaseAuth.getInstance()
@@ -108,6 +111,9 @@ class CreateUserActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 if (user.isEmailVerified) {
                     crearUsuarioEnFirestore()
+                    finish() // Cierra la actividad actual
+                    val intentLogin = Intent(this, LoginActivity::class.java)
+                    startActivity(intentLogin) // Abre la actividad de login
                 } else {
                     Toast.makeText(this, "Por favor, verifica nuevamente tu correo electrónico", Toast.LENGTH_SHORT).show()
                 }
@@ -125,8 +131,9 @@ class CreateUserActivity : AppCompatActivity() {
             .setTitle("Introducir Código")
             .setView(dialogView)
             .create()
-
+        alertDialog.setCanceledOnTouchOutside(false)
         alertDialog.show()
+
 
         dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
             val codigo = codigoEditText.text.toString()
@@ -170,7 +177,7 @@ class CreateUserActivity : AppCompatActivity() {
                 })
                 .build()
 
-            // Iniciar el proceso de verificación
+            // Inicia el proceso de verificación
             PhoneAuthProvider.verifyPhoneNumber(options)
         } else {
             Toast.makeText(this, "Ingrese un número de teléfono válido", Toast.LENGTH_SHORT)
@@ -223,6 +230,7 @@ class CreateUserActivity : AppCompatActivity() {
             "genero" to genero,
             "fechanacimiento" to fechanac,
             "correo" to email,
+            "entradasAdquiridas" to " ",
             "rol" to "Usuario"
         )
         FirebaseFirestore.getInstance().collection("users").document(uid).set(userData)
@@ -416,7 +424,7 @@ class CreateUserActivity : AppCompatActivity() {
         val generoSeleccionado = generoSpinner.selectedItem?.toString() ?: ""
 
         // Validar que se haya seleccionado un género distinto de "Selecciona una opción"
-        if (generoSeleccionado == "Selecciona una opción") {
+        if (generoSeleccionado == "Seleccione su género") {
             generoError.error = "  Seleccione su género"
             hayErrores = true
         } else {
@@ -432,8 +440,8 @@ class CreateUserActivity : AppCompatActivity() {
                 id: Long
             ) {
                 val genero = parent?.getItemAtPosition(position)?.toString() ?: ""
-                if (genero == "Selecciona una opción") {
-                    generoError.error = "  Seleccione su género"
+                if (genero == "Seleccione su género") {
+                    generoError.error = "Seleccione su género"
                     hayErrores = true
                 } else {
                     generoError.error = null
@@ -461,8 +469,8 @@ class CreateUserActivity : AppCompatActivity() {
                     nombreEditText.error = "El nombre no puede estar vacío"
                     hayErrores = true
                     return
-                } else if (nombre.length < 5) {
-                    nombreEditText.error = "El nombre debe tener al menos 5 letras"
+                } else if (nombre.length < 3) {
+                    nombreEditText.error = "El nombre debe tener al menos 3 letras"
                     hayErrores = true
                 } else {
                     nombreEditText.error = null
@@ -496,8 +504,8 @@ class CreateUserActivity : AppCompatActivity() {
                     apeEditText.error = "El apellido no puede estar vacío"
                     hayErrores = true
                     return
-                } else if (apellido.length < 5) {
-                    apeEditText.error = "El apellido debe tener al menos 5 letras"
+                } else if (apellido.length < 3) {
+                    apeEditText.error = "El apellido debe tener al menos 3 letras"
                     hayErrores = true
                 } else {
                     apeEditText.error = null
@@ -627,11 +635,15 @@ class CreateUserActivity : AppCompatActivity() {
                     if (edad < 18) {
                         fechaNacimientoInputLayout.error = "  Debe ser mayor de edad para registrarse"
                         hayErrores = true
-                    } else {
-                        fechaNacimientoInputLayout.error = null
-                        hayErrores = false
+                    } else if (edad > 70) {
+                        fechaNacimientoInputLayout.error =
+                            "  Debe ser menor de 70 años para registrarte"
+                        hayErrores = true
+                    }else{
+                            fechaNacimientoInputLayout.error = null
+                            hayErrores = false
+                        }
                     }
-                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -667,7 +679,7 @@ class CreateUserActivity : AppCompatActivity() {
                     ciEditText.error = "Ingrese un número de cédula"
                     hayErrores = true
                     return
-                } else if (numeroCI.length < 6) {
+                } else if (numeroCI.length < 7) {
                     ciEditText.error = "El número de cédula debe tener al menos 6 caracteres"
                     hayErrores = true
                     return
@@ -789,10 +801,13 @@ class CreateUserActivity : AppCompatActivity() {
         if (fechaNacEditText.error != null) {
             return true
         }
-
-        // Agrega aquí verificaciones adicionales para otros campos si los hay
-
-        // Si llegamos aquí, significa que no hay errores visibles en los campos
+        val generoSpinner = findViewById<Spinner>(R.id.spGenero)
+        val generoError = findViewById<TextInputLayout>(R.id.titulo_Genero)
+        val generoSeleccionado = generoSpinner.selectedItem?.toString() ?: ""
+        if (generoSeleccionado == "Seleccione su género") {
+            generoError.error = "  Seleccione su género"
+            hayErrores = true
+        }
         return false
     }
 

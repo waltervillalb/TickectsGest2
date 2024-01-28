@@ -37,18 +37,14 @@ class EntradasFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerViewEntradas)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
-
         entradaArrayList = arrayListOf()
-
         // Inicializa el adaptador con el listener de clics
         entradasadapter = EntradasAdapter(entradaArrayList) { entradaId ->
             // Lógica a ejecutar cuando se presiona el botón "Ver"
             abrirDetalleEntrada(entradaId as String)
         }
         recyclerView.adapter = entradasadapter
-
         EventChangeListener()
-
         return view
     }
 

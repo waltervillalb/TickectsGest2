@@ -3,6 +3,7 @@ package com.Android.tickects
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
+import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -10,19 +11,23 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.Android.tickects.Fragments.userId
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
-
     private lateinit var firebaseAuth: FirebaseAuth
     private var loadingDialog: AlertDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         setupLoadingDialog()
+
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        supportActionBar?.hide()
 
         val txtEmail: TextView = findViewById(R.id.text_email)
         val txtPssw: TextView = findViewById(R.id.text_password)
@@ -67,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
     private fun signIn(email: String, password: String){
         showLoadingDialog()
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener (this){
-             task ->
+                task ->
             hideLoadingDialog()
             if(task.isSuccessful) {
                 val user = firebaseAuth.currentUser
@@ -79,10 +84,10 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(i)
                 finish()
             } else{
-                    Toast.makeText(baseContext,"Error en los datos en los datos ingresados", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(baseContext,"Error en los datos en los datos ingresados", Toast.LENGTH_SHORT).show()
             }
         }
+    }
     private fun setupLoadingDialog() {
         val builder = AlertDialog.Builder(this, R.style.CustomProgressDialog)
         val progressBar = ProgressBar(this)

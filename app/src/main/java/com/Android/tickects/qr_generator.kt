@@ -48,6 +48,10 @@ class qr_generator : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_generator)
 
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
         //concatena los datos del usuario y de la entrada
         entradaId = intent.getStringExtra("EXTRA_ENTRADA_ID") ?: ""
 
@@ -123,7 +127,6 @@ class qr_generator : AppCompatActivity() {
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Manejo de errores
             }
         })
 
@@ -153,7 +156,7 @@ class qr_generator : AppCompatActivity() {
     private fun iniciarCronometro() {
         countdownTimer?.cancel() // Detén el contador si está en marcha
 
-        val tiempoTotal = 60000 // Duración total en milisegundos (ejemplo: 15 segundos)
+        val tiempoTotal = 15000 // Duración total en milisegundos (ejemplo: 15 segundos)
         progressBar.max = tiempoTotal / 1000 // Configura el máximo del ProgressBar
 
         // Crea un nuevo cronometro de 15 segundos con actualizaciones cada segundo
@@ -188,15 +191,10 @@ class qr_generator : AppCompatActivity() {
 
 
     //Actualizar el Token en Firebase
-
     private fun actualizarTokenEnFirebase(nuevoToken: String) {
-        // Actualiza el token utilizando updateChildren. El updateChildren actualiza los token en una ruta específica.
-        // es decir; se ocupa de actualizar el valor en la ubicación definida por tokenPath.
         val updates = HashMap<String, Any>()
         val user = FirebaseAuth.getInstance().currentUser
         val user_id = user?.uid
-
-        // Construye la ruta en la base de datos
         val tokenPath = "users/$user_id/$entradaId/token"
         updates[tokenPath] = nuevoToken
 
@@ -231,7 +229,6 @@ class qr_generator : AppCompatActivity() {
     }
 
     private fun cargarDatosUsuarioYEvento(entradaId: String) {
-        // Suponiendo que tienes el ID del usuario y el ID del evento
         val user = FirebaseAuth.getInstance().currentUser
         val userID = user?.uid ?: return // Retorna si el usuario no está autenticado
 
@@ -301,7 +298,7 @@ class qr_generator : AppCompatActivity() {
                 if (document.exists()) {
                     val nombre = document.getString("nombre") ?: ""
                     val apellido = document.getString("apellido") ?: ""
-                    val mensajeConfirmacion = "¿Estás seguro de que quieres compartir con <b>$nombre</b> $apellido?"
+                    val mensajeConfirmacion = "¿Estás seguro de que quieres compartir con <b>$nombre $apellido?<b>"
 
                     AlertDialog.Builder(this)
                         .setTitle("Confirmar Compartir")
@@ -335,7 +332,6 @@ class qr_generator : AppCompatActivity() {
 
             // Agregar la entrada al usuario destinatario en Firestore
             agregarEntradaAUsuarioDestinatario(idUsuarioDestinatario, entradaId)
-
             finish()
             onBackPressed()
         } else {

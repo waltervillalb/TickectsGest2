@@ -8,8 +8,10 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.ktx.appCheck
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 
 class MainActivity : AppCompatActivity() {
@@ -22,10 +24,10 @@ class MainActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
 
         // Obtener la instancia de FirebaseAppCheck
-        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-
-        // Instalar el proveedor de Play Integrity
-        firebaseAppCheck.installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory(
+            PlayIntegrityAppCheckProviderFactory.getInstance(),
+        )
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         supportActionBar?.hide()
 
