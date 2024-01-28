@@ -17,6 +17,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.DatabaseReference
@@ -323,7 +324,10 @@ class qr_generator : AppCompatActivity() {
         if (userId != null) {
             // Registrar la acción de compartir en el historial del usuario remitente
             agregarAHistorialTransacciones(userId, entradaId, "compartido")
-
+            val analytics = FirebaseAnalytics.getInstance(this)
+            val bundle = Bundle()
+            bundle.putString("entrada_id", entradaId)
+            analytics.logEvent("entrada_compartida", bundle)
             // Eliminar la entrada y el token del usuario remitente en Realtime Database
             eliminarEntradaYTokenDeRealtimeDatabase(userId, entradaId)
 
