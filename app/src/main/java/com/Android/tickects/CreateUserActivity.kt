@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
@@ -61,7 +62,7 @@ class CreateUserActivity : AppCompatActivity() {
         val etpassword = findViewById<EditText>(R.id.etPasswordCreateUser)
         val cbMostrarContrasena = findViewById<CheckBox>(R.id.cbMostrarContrasena)
 
-// Configurar el CheckBox para mostrar/ocultar la contraseña
+        // Configurar el CheckBox para mostrar/ocultar la contraseña
         cbMostrarContrasena.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 // Mostrar la contraseña
@@ -127,6 +128,20 @@ class CreateUserActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.validatephone_number, null)
         val codigoEditText = dialogView.findViewById<EditText>(R.id.edt_code)
 
+        // Agrega un TextWatcher para validar en tiempo real
+        codigoEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().length != 6) {
+                    codigoEditText.error = "El código debe tener 6 dígitos"
+                } else {
+                    codigoEditText.error = null
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
         val alertDialog = AlertDialog.Builder(this)
             .setTitle("Introducir Código")
             .setView(dialogView)
@@ -134,12 +149,20 @@ class CreateUserActivity : AppCompatActivity() {
         alertDialog.setCanceledOnTouchOutside(false)
         alertDialog.show()
 
-
-        dialogView.findViewById<Button>(R.id.btn_validar).setOnClickListener {
+        val btnValidate = dialogView.findViewById<Button>(R.id.btn_validar)
+        btnValidate.setOnClickListener {
             val codigo = codigoEditText.text.toString()
-            val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
-            signInWithPhoneAuthCredential(credential)
-            // Cerrar el diálogo después de validar el código
+            if (codigo.isEmpty()) { // Verifica si el campo está vacío
+                Toast.makeText(this, "Por favor, introduce un código", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener // Sal de la función si el campo está vacío
+            }
+            if (codigo.length == 6) {
+                val credential = PhoneAuthProvider.getCredential(verificationId!!, codigo)
+                signInWithPhoneAuthCredential(credential)
+                alertDialog.dismiss()
+            } else {
+                Toast.makeText(this, "El código debe tener 6 dígitos", Toast.LENGTH_SHORT).show()
+            }
         }
     }
     private fun enviarCodigo() {
@@ -213,7 +236,6 @@ class CreateUserActivity : AppCompatActivity() {
 
         // Almacena el UID del usuario actual en la variable global
         uidUsuario = user?.uid
-
         uidUsuario?.let {
             saveUserData(nombre, apellido, telefono, numeroCI, genero, fechanac, email, it)
         } ?: run {
@@ -235,14 +257,12 @@ class CreateUserActivity : AppCompatActivity() {
         )
         FirebaseFirestore.getInstance().collection("users").document(uid).set(userData)
             .addOnSuccessListener {
-                Toast.makeText(this, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Registro Exitoso de usuario", Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Error al registrar el usuario", Toast.LENGTH_SHORT).show()
             }
     }
-
-
     private fun createUserWithEmailAndPassword(email: String, password: String) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -294,6 +314,7 @@ class CreateUserActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             else -> {
                 // Otros errores
                 Toast.makeText(
@@ -308,9 +329,6 @@ class CreateUserActivity : AppCompatActivity() {
 
 
     //verificacion de errores en cada campo
-
-
-
     private fun validarContrasena() {
         val passwordEditText = findViewById<EditText>(R.id.etPasswordCreateUser)
 
@@ -318,7 +336,6 @@ class CreateUserActivity : AppCompatActivity() {
             passwordEditText.error = "Ingrese una contraseña"
             hayErrores = true
         }
-
         passwordEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val passwordText = s.toString()
@@ -362,17 +379,14 @@ class CreateUserActivity : AppCompatActivity() {
                     hayErrores = true
                     return
                 }
-
                 // Verificar en tiempo real si el correo electrónico ya existe en Firebase
                 verificarCorreoEnFirebase(correo)
-
                 // Validar el formato del correo electrónico
                 if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
                     emailEditText.error = "Ingrese un correo electrónico válido"
                     hayErrores = true
                     return
                 }
-
                 // Verificar si hay un punto antes del "@"
                 val indexOfAt = correo.indexOf("@")
                 if (indexOfAt > 0 && correo.substring(indexOfAt - 1, indexOfAt) == ".") {
@@ -679,8 +693,8 @@ class CreateUserActivity : AppCompatActivity() {
                     ciEditText.error = "Ingrese un número de cédula"
                     hayErrores = true
                     return
-                } else if (numeroCI.length < 7) {
-                    ciEditText.error = "El número de cédula debe tener al menos 6 caracteres"
+                } else if (numeroCI.length !in 6..7) {
+                    ciEditText.error = "El número de cédula debe tener 6 o 7 caracteres"
                     hayErrores = true
                     return
                 } else {
@@ -727,90 +741,100 @@ class CreateUserActivity : AppCompatActivity() {
                 }
             }
     }
-    private fun validarcodigo() {
-        val codigoEditText = findViewById<EditText>(R.id.edt_code)
-
-        if (codigoEditText.text.toString().isEmpty()) {
-            codigoEditText.error = "Ingrese un codigo valido"
-            hayErrores = true
-        }
-
-        codigoEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val nombre = s.toString().trim()
-                if (nombre.isEmpty()) {
-                    codigoEditText.error = "El campo no puede estar vacio"
-                    hayErrores = false
-                    return
-                } else {
-                    codigoEditText.error = null
-                    hayErrores = false
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Validar que no esté vacío
-                if (s.toString().isEmpty()) {
-                    codigoEditText.error = ""
-                    hayErrores = true
-                    return
-                }
-            }
-        })
-    }
     private fun existeAlgunError(): Boolean {
+        // Verificar si el campo de contraseña tiene un error
+        var hayErrores = false
+
         // Verificar si el campo de contraseña tiene un error
         val passwordEditText = findViewById<EditText>(R.id.etPasswordCreateUser)
         if (passwordEditText.error != null) {
-            return true
+            hayErrores = true
         }
 
         // Verificar si el campo de email tiene un error
         val emailEditText = findViewById<EditText>(R.id.etEmail)
         if (emailEditText.error != null) {
-            return true
+            hayErrores = true
         }
 
         // Verificar si el campo de nombre tiene un error
         val nombreEditText = findViewById<EditText>(R.id.etNombre)
         if (nombreEditText.error != null) {
-            return true
+            hayErrores = true
         }
 
         // Verificar si el campo de apellido tiene un error
         val apellidoEditText = findViewById<EditText>(R.id.etApellido)
         if (apellidoEditText.error != null) {
-            return true
+            hayErrores = true
         }
 
         // Verificar si el campo de teléfono tiene un error
         val telefonoEditText = findViewById<EditText>(R.id.etNumeroCelular)
         if (telefonoEditText.error != null) {
-            return true
+            hayErrores = true
         }
 
         // Verificar si el campo de número de CI tiene un error
         val numeroCIEditText = findViewById<EditText>(R.id.etNumeroCi)
         if (numeroCIEditText.error != null) {
-            return true
+            hayErrores = true
         }
-
+        if (validarFechaNacimient()) {
+            hayErrores = true
+        }
         // Verificar si el campo de fecha de nacimiento tiene un error
         val fechaNacEditText = findViewById<EditText>(R.id.etFechaNac)
         if (fechaNacEditText.error != null) {
-            return true
-        }
-        val generoSpinner = findViewById<Spinner>(R.id.spGenero)
-        val generoError = findViewById<TextInputLayout>(R.id.titulo_Genero)
-        val generoSeleccionado = generoSpinner.selectedItem?.toString() ?: ""
-        if (generoSeleccionado == "Seleccione su género") {
-            generoError.error = "  Seleccione su género"
             hayErrores = true
         }
-        return false
+
+        // Verificar si se ha seleccionado un género
+        val generoSpinner = findViewById<Spinner>(R.id.spGenero)
+        val generoSeleccionado = generoSpinner.selectedItem?.toString() ?: ""
+        if (generoSeleccionado == "Seleccione su género") {
+            val generoError = findViewById<TextInputLayout>(R.id.titulo_Genero)
+            generoError.error = "Seleccione su género"
+            hayErrores = true
+        }
+
+        return hayErrores
     }
 
+    private fun validarFechaNacimient(): Boolean {
+        val fechaNacEditText = findViewById<EditText>(R.id.etFechaNac)
+        val fechaNacimiento = fechaNacEditText.text.toString().trim()
+
+        if (fechaNacimiento.isEmpty()) {
+            fechaNacEditText.error = "Ingrese su fecha de nacimiento"
+            return true
+        }
+
+        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        val fechaNacimientoDate = try {
+            formatter.parse(fechaNacimiento)
+        } catch (e: Exception) {
+            null
+        }
+
+        if (fechaNacimientoDate == null) {
+            fechaNacEditText.error = "Formato de fecha inválido. Use dd/MM/yyyy"
+            return true
+        }
+
+        val hoy = Calendar.getInstance().time
+        val edad = calcularEdad(fechaNacimientoDate, hoy)
+        if (edad < 18) {
+            fechaNacEditText.error = "Debe ser mayor de edad para registrarse"
+            return true
+        } else if (edad > 70) {
+            fechaNacEditText.error = "Debe ser menor de 70 años para registrarte"
+            return true
+        }
+
+        // Si llega hasta aquí, la fecha de nacimiento es válida
+        return false
+    }
 }
 
 

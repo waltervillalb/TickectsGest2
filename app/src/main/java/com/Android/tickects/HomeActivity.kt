@@ -40,6 +40,10 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
         val analytics: FirebaseAnalytics
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -87,14 +91,13 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
                     val rol = documentSnapshot.getString("rol")
-                    if(rol == "Administrador")
-                    itemConfigEntradas.isVisible
-                } else {
-                    // El documento no existe
+                    if (rol == "Administrador") {
+                        // Si el usuario es administrador, muestra el ítem
+                        itemConfigEntradas.isVisible = true
+                    }
                 }
             }
             .addOnFailureListener { exception ->
-                // Manejar errores si la consulta a la base de datos falla
                 Log.e(TAG, "Error al obtener datos del usuario: $exception")
             }
 

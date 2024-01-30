@@ -29,6 +29,10 @@ class EntradasAdapter(
 
         // Asignar el nombre del evento al TextView en el holder
         holder.nombreEvento.text = entrada.nombreEvento ?: "Nombre no disponible"
+        holder.fecha.text = entrada.fecha ?: "Fecha no disponible"
+
+// Asignar la hora del evento al TextView en el holder
+        holder.hora.text = entrada.hora ?: "Hora no disponible"
 
         Glide.with(holder.itemView.context)
             .load(entrada.imageUrl)
@@ -47,7 +51,7 @@ class EntradasAdapter(
 
         val btnVer: Button = holder.itemView.findViewById(R.id.btnVer)
 
-        if (entrada.fecha == fechaActual) {
+        if (entrada.fecha >= fechaActual) {
             // Mostrar el botón si estamos en el día del evento
             btnVer.visibility = View.VISIBLE
             Log.d("EntradasAdapter", "Mostrando botón para ${entrada.nombreEvento}")
@@ -70,6 +74,8 @@ class EntradasAdapter(
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nombreEvento: TextView = itemView.findViewById(R.id.tvNombreEvento)
+        val fecha: TextView = itemView.findViewById(R.id.tvFechaEvento)
+        val hora: TextView = itemView.findViewById(R.id.tvHoraEvento)
         val flyerImagen: ImageView = itemView.findViewById(R.id.ivFlyer)
     }
 }

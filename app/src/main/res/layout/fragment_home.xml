@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/gifImageView"
         android:layout_width="match_parent"
-        android:layout_height="800dp"
+        android:layout_height="739dp"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"

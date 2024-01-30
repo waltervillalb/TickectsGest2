@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:padding="16dp">
 
 
@@ -19,16 +20,42 @@
             android:layout_height="60dp"
             android:background="@drawable/borde"
             android:src="@drawable/placeholder"
-        android:layout_gravity="center_vertical"
-        android:padding="4dp" />
+            android:layout_gravity="center_vertical"
+            android:padding="4dp" />
 
-        <TextView
-            android:id="@+id/tvNombreEvento"
-            android:layout_width="2dp"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAlignment="center"
-            android:text="Nombre del Evento" />
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="8dp">
+
+            <TextView
+                android:id="@+id/tvNombreEvento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="Nombre del Evento"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvFechaEvento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fecha del Evento"
+                android:textSize="14sp"
+                android:textAlignment="center"/>
+
+            <TextView
+                android:id="@+id/tvHoraEvento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hora del Evento"
+                android:textSize="14sp"
+                android:textAlignment="center"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnVer"

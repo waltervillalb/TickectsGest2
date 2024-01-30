@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/Theme.AppCompat.Light"
-    android:paddingTop="50dp">
+    android:theme="@style/Theme.AppCompat.Light">
 
     <RelativeLayout
         android:layout_width="match_parent"

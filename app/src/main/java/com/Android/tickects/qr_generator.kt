@@ -12,6 +12,7 @@ import android.text.TextUtils
 import android.os.CountDownTimer
 import android.text.Html
 import android.text.InputType
+import android.util.Log
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
@@ -49,20 +50,12 @@ class qr_generator : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_generator)
 
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
+        //window.setFlags(
+       //     WindowManager.LayoutParams.FLAG_SECURE,
+        //    WindowManager.LayoutParams.FLAG_SECURE
+       // )
         //concatena los datos del usuario y de la entrada
         entradaId = intent.getStringExtra("EXTRA_ENTRADA_ID") ?: ""
-
-        // Verifica si entradaId está vacío y maneja ese caso
-        if (entradaId.isEmpty()) {
-            Toast.makeText(this, "ID de entrada no proporcionado", Toast.LENGTH_SHORT).show()
-            finish() // Finaliza la actividad si no hay ID de entrada
-            return
-        }
-
         // Ahora que entradaId está inicializado, llama a cargarDatosUsuarioYEvento
         cargarDatosUsuarioYEvento(entradaId)
 
@@ -155,9 +148,9 @@ class qr_generator : AppCompatActivity() {
         window.attributes = layoutParams
     }
     private fun iniciarCronometro() {
-        countdownTimer?.cancel() // Detén el contador si está en marcha
+        countdownTimer?.cancel() //
 
-        val tiempoTotal = 15000 // Duración total en milisegundos (ejemplo: 15 segundos)
+        val tiempoTotal = 10000 // Duración total en milisegundos (ejemplo: 15 segundos)
         progressBar.max = tiempoTotal / 1000 // Configura el máximo del ProgressBar
 
         // Crea un nuevo cronometro de 15 segundos con actualizaciones cada segundo
@@ -273,7 +266,6 @@ class qr_generator : AppCompatActivity() {
             }
         }
     }
-
     private fun mostrarPopupCompartir() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Compartir Entrada")
@@ -281,17 +273,31 @@ class qr_generator : AppCompatActivity() {
         // Configurar el input para el ID del usuario
         val input = EditText(this)
         input.inputType = InputType.TYPE_CLASS_TEXT
+        input.hint = "Escribe el ID a transferir"
         builder.setView(input)
 
         // Configurar botones OK y Cancelar
-        builder.setPositiveButton("OK") { dialog, _ ->
-            val idUsuarioACompartir = input.text.toString()
-            confirmarCompartir(idUsuarioACompartir)
-            dialog.dismiss()
-        }
+        builder.setPositiveButton("OK", null) // Se establece a null por ahora
         builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
 
-        builder.show()
+        val dialog = builder.create()
+
+        dialog.setOnShowListener {
+            val buttonOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            buttonOk.setOnClickListener {
+                val idUsuarioACompartir = input.text.toString()
+                if (idUsuarioACompartir.isEmpty()) {
+                    // Mostrar error si el campo está vacío
+                    input.error = "Este campo no puede estar vacío"
+                } else {
+                    // Procesar el ID del usuario
+                    confirmarCompartir(idUsuarioACompartir)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
     }
     private fun confirmarCompartir(idUsuarioACompartir: String) {
         FirebaseFirestore.getInstance().collection("users").document(idUsuarioACompartir).get()
@@ -404,6 +410,4 @@ class qr_generator : AppCompatActivity() {
                 Toast.makeText(applicationContext, "Error al agregar la entrada al destinatario: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
-
-
 }

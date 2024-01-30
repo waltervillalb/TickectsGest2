@@ -1,10 +1,40 @@
 {
   "project_info": {
     "project_number": "348332677708",
+    "firebase_url": "https://gesttickets-8818a-default-rtdb.firebaseio.com",
     "project_id": "gesttickets-8818a",
     "storage_bucket": "gesttickets-8818a.appspot.com"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348332677708:android:ea49ff694ccad280fbf2e9",
+        "android_client_info": {
+          "package_name": "columbia.com.py.gesticketlogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348332677708-1kcj4i9vmlsqaqn2viltt5kno68m94ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9JZrS7VObYCnMfqgdALFYN27Q4ytK7DM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348332677708-1kcj4i9vmlsqaqn2viltt5kno68m94ns.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:348332677708:android:72f1ed07e20b20ebfbf2e9",
@@ -14,28 +44,28 @@
       },
       "oauth_client": [
         {
-          "client_id": "348332677708-2om1m16a9jngklefme28nkuse6pmjbns.apps.googleusercontent.com",
+          "client_id": "348332677708-9436c8ltqro1mr3dtfph8dkha4le1ob1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.Android.tickects",
-            "certificate_hash": "ea66902f5bd46b749b2d3e1e4dcb970ad7d33f21"
+            "certificate_hash": "2f8deefbab469de6a4aaeb1e6b615d1c2c578b82"
           }
         },
         {
-          "client_id": "348332677708-19025gqg1p17j3vmjchpivh9ttjarqat.apps.googleusercontent.com\n",
+          "client_id": "348332677708-1kcj4i9vmlsqaqn2viltt5kno68m94ns.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCaevcZqdphEXmZEqZLyUWKnQE__k12o2c"
+          "current_key": "AIzaSyB9JZrS7VObYCnMfqgdALFYN27Q4ytK7DM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "348332677708-2om1m16a9jngklefme28nkuse6pmjbns.apps.googleusercontent.com",
+              "client_id": "348332677708-1kcj4i9vmlsqaqn2viltt5kno68m94ns.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

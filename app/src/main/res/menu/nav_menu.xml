@@ -11,6 +11,7 @@
 
         <item
             android:id="@+id/CONFentradas"
+            android:visible="false"
             android:icon="@drawable/baseline_settings_24"
             android:title="Configuracion Entradas"/>
     </group>
