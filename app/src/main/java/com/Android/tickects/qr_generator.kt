@@ -3,6 +3,7 @@ package com.Android.tickects
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
@@ -50,10 +51,10 @@ class qr_generator : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_generator)
 
-        //window.setFlags(
-       //     WindowManager.LayoutParams.FLAG_SECURE,
-        //    WindowManager.LayoutParams.FLAG_SECURE
-       // )
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
         //concatena los datos del usuario y de la entrada
         entradaId = intent.getStringExtra("EXTRA_ENTRADA_ID") ?: ""
         // Ahora que entradaId está inicializado, llama a cargarDatosUsuarioYEvento
@@ -261,12 +262,36 @@ class qr_generator : AppCompatActivity() {
 
                 tvNombreEntrada.text = "Evento: $nombreEvento"
                 tvFecha.text = "fecha: $fecha"
-                tvHora.text = "fecha: $hora"
-                tvUbicacion.text = "Ubicación: $ubicacion"
+      1
             }
         }
     }
     private fun mostrarPopupCompartir() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Compartir Entrada")
+
+        val options = arrayOf("Compartir por contacto", "Compartir por ID")
+
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> mostrarLayoutCompartirPorContacto()
+                1 -> mostrarLayoutCompartirPorID()
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun mostrarLayoutCompartirPorContacto() {
+        // Aquí muestra el layout para compartir por contacto
+        // Por ejemplo, puedes abrir una nueva actividad o fragmento
+        val intent = Intent(this, CompartirPorContactoActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun mostrarLayoutCompartirPorID() {
+        // Aquí muestra el layout para compartir por ID
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Compartir Entrada")
 
@@ -277,26 +302,21 @@ class qr_generator : AppCompatActivity() {
         builder.setView(input)
 
         // Configurar botones OK y Cancelar
-        builder.setPositiveButton("OK", null) // Se establece a null por ahora
+        builder.setPositiveButton("OK") { _, _ ->
+            val idUsuarioACompartir = input.text.toString()
+            if (idUsuarioACompartir.isEmpty()) {
+                // Mostrar error si el campo está vacío
+                input.error = "Este campo no puede estar vacío"
+            } else {
+                // Procesar el ID del usuario
+                confirmarCompartir(idUsuarioACompartir)
+                // Mostrar nuevamente el diálogo de compartir
+                mostrarPopupCompartir()
+            }
+        }
         builder.setNegativeButton("Cancelar") { dialog, _ -> dialog.cancel() }
 
         val dialog = builder.create()
-
-        dialog.setOnShowListener {
-            val buttonOk = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            buttonOk.setOnClickListener {
-                val idUsuarioACompartir = input.text.toString()
-                if (idUsuarioACompartir.isEmpty()) {
-                    // Mostrar error si el campo está vacío
-                    input.error = "Este campo no puede estar vacío"
-                } else {
-                    // Procesar el ID del usuario
-                    confirmarCompartir(idUsuarioACompartir)
-                    dialog.dismiss()
-                }
-            }
-        }
-
         dialog.show()
     }
     private fun confirmarCompartir(idUsuarioACompartir: String) {

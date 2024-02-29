@@ -14,6 +14,10 @@ import com.Android.tickects.Fragments.userId
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
@@ -69,22 +73,62 @@ class LoginActivity : AppCompatActivity() {
 
     }
     //traer datos de la autenticacion de firebase
-    private fun signIn(email: String, password: String){
+    private fun signIn(email: String, password: String) {
         showLoadingDialog()
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener (this){
-                task ->
-            hideLoadingDialog()
-            if(task.isSuccessful) {
-                val user = firebaseAuth.currentUser
-                val id= user?.uid ?: ""
-                userId.iduser=id
-                Toast.makeText(baseContext, "operación exitosa", Toast.LENGTH_SHORT).show()
-                //aqui vamos a ir a la pantalla Home
-                val i = Intent(this, HomeActivity::class.java)
-                startActivity(i)
-                finish()
-            } else{
-                Toast.makeText(baseContext,"Error en los datos en los datos ingresados", Toast.LENGTH_SHORT).show()
+        val databaseReference = FirebaseDatabase.getInstance().getReference("sesion")
+
+        firebaseAuth.fetchSignInMethodsForEmail(email).addOnCompleteListener { fetchTask ->
+            if (fetchTask.isSuccessful) {
+                val signInMethods = fetchTask.result?.signInMethods ?: emptyList()
+                if (signInMethods.isNotEmpty()) {
+                    // El usuario ya está registrado, verificar el estado de la sesión
+                    firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val user = firebaseAuth.currentUser
+                            val id = user?.uid ?: ""
+                            userId.iduser=id
+                            if (id.isNotEmpty()) {
+                                databaseReference.child(id).get().addOnSuccessListener { dataSnapshot ->
+                                    val isActiveSession = dataSnapshot.getValue(Boolean::class.java) ?: false
+                                    if (!isActiveSession) {
+                                        // No hay sesión activa, proceder a marcar la sesión como activa
+                                        databaseReference.child(id).setValue(true).addOnCompleteListener { sessionTask ->
+                                            hideLoadingDialog()
+                                            if (sessionTask.isSuccessful) {
+                                                Toast.makeText(baseContext, "Operación exitosa", Toast.LENGTH_SHORT).show()
+                                                val intent = Intent(this, HomeActivity::class.java)
+                                                startActivity(intent)
+                                                finish()
+                                            } else {
+                                                Toast.makeText(baseContext, "Error al actualizar el estado de la sesión", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    } else {
+                                        // Ya existe una sesión activa
+                                        hideLoadingDialog()
+                                        Toast.makeText(baseContext, "Ya hay una sesión activa en otro dispositivo", Toast.LENGTH_SHORT).show()
+                                    }
+                                }.addOnFailureListener {
+                                    hideLoadingDialog()
+                                    Toast.makeText(baseContext, "Error al verificar el estado de la sesión", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                hideLoadingDialog()
+                                Toast.makeText(baseContext, "Error obteniendo información del usuario", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            hideLoadingDialog()
+                            Toast.makeText(baseContext, "Error en los datos ingresados", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    // El usuario no está registrado, manejar según corresponda
+                    hideLoadingDialog()
+                    Toast.makeText(baseContext, "No existe una cuenta con este correo electrónico", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                hideLoadingDialog()
+                Toast.makeText(baseContext, "Error al verificar el correo electrónico", Toast.LENGTH_SHORT).show()
             }
         }
     }

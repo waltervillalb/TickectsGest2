@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +28,8 @@ class Escaneo_de_qr : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_escaneo_de_qr)
         resultEscaneo = findViewById(R.id.tv_ScaneoResult)
+
+
 
         val btnStartScan = findViewById<Button>(R.id.btn_StartScaneo)
         btnStartScan.setOnClickListener {

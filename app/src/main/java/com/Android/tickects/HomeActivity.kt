@@ -20,11 +20,13 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.Android.tickects.Fragments.*
+import com.Android.tickects.Fragments.userId.Companion.iduser
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
@@ -40,10 +42,13 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+/*
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
         )
+
+ */
 
         val analytics: FirebaseAnalytics
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -175,18 +180,39 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun logoutUser() {
-        FirebaseAuth.getInstance().signOut()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+            val databaseReference = FirebaseDatabase.getInstance().getReference("sesion")
 
-        // Redirige al usuario a la pantalla de inicio de sesión o la pantalla principal.
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()  // Esto cierra la actividad actual, evitando que el usuario retroceda a la sesión cerrada.
+            // Actualiza el estado de la sesión en Firebase Realtime Database a false
+            databaseReference.child(userId).setValue(false)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Una vez actualizado el estado de la sesión, cierra la sesión en Firebase Auth
+                        FirebaseAuth.getInstance().signOut()
+
+                        // Redirige al usuario a la pantalla de inicio de sesión
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish() // Esto cierra la actividad actual
+                    } else {
+                        // Manejo de errores, si falla la actualización en la base de datos
+                        Toast.makeText(
+                            baseContext,
+                            "Error al actualizar el estado de la sesión.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        }
     }
     override fun onBackPressed() {
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setMessage("¿Desea salir de la aplicación?")
         alertDialogBuilder.setPositiveButton("Sí") { _, _ ->
-            super.onBackPressed()
+             logoutUser()
         }
         alertDialogBuilder.setNegativeButton("No") { _, _ -> }
         val alertDialog = alertDialogBuilder.create()
@@ -207,5 +233,6 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             else -> return false
         }
     }
+
 }
 
