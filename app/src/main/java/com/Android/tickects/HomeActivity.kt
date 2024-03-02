@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.view.*
 import android.widget.FrameLayout
@@ -37,6 +38,9 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
 
+    private var sessionTimer: CountDownTimer? = null
+    private val SESSION_TIMEOUT: Long = 5 * 60 * 1000 // 5 minutos en milisegundos
+
     @SuppressLint("MissingInflatedId", "SuspiciousIndentation")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +53,7 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         )
 
  */
-
+        startSessionTimer()
         val analytics: FirebaseAnalytics
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -178,7 +182,43 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     private fun showBottomDialog() {
     }
+    override fun onPause() {
+        super.onPause()
+        // Inicia el temporizador solo si no está ya iniciado
+        if (sessionTimer == null) {
+            startSessionTimer()
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        // Cancela el temporizador si la app vuelve a primer plano antes de los 5 minutos
+        stopSessionTimer()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: La actividad se está destruyendo")
+        stopSessionTimer() // Detiene el temporizador de sesión cuando la aplicación se destruye
+        updateSessionState(false) // Actualiza el estado de la sesión a false al destruir la aplicación
+    }
 
+    private fun startSessionTimer() {
+        sessionTimer?.cancel() // Asegurarse de cancelar cualquier temporizador existente
+        sessionTimer = object : CountDownTimer(SESSION_TIMEOUT, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                // Aquí podrías actualizar una UI con el tiempo restante si fuera necesario
+            }
+
+            override fun onFinish() {
+                // Actualiza el estado de la sesión a false
+                updateSessionState(false)
+            }
+        }.start()
+    }
+
+    private fun stopSessionTimer() {
+        sessionTimer?.cancel()
+        sessionTimer = null
+    }
     private fun logoutUser() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
@@ -199,6 +239,25 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                         finish() // Esto cierra la actividad actual
                     } else {
                         // Manejo de errores, si falla la actualización en la base de datos
+                        Toast.makeText(
+                            baseContext,
+                            "Error al actualizar el estado de la sesión.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        }
+    }
+
+    private fun updateSessionState(isActive: Boolean) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            val userId = user.uid
+            val databaseReference = FirebaseDatabase.getInstance().getReference("sesion")
+            databaseReference.child(userId).setValue(isActive)
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        // Manejo de errores si falla la actualización en la base de datos
                         Toast.makeText(
                             baseContext,
                             "Error al actualizar el estado de la sesión.",

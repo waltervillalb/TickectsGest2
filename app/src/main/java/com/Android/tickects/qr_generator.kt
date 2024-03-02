@@ -284,12 +284,11 @@ class qr_generator : AppCompatActivity() {
     }
 
     private fun mostrarLayoutCompartirPorContacto() {
-        // Aquí muestra el layout para compartir por contacto
-        // Por ejemplo, puedes abrir una nueva actividad o fragmento
         val intent = Intent(this, CompartirPorContactoActivity::class.java)
+        intent.putExtra("EXTRA_ENTRADA_ID", entradaId) // Pasa el ID de la entrada
         startActivity(intent)
+        finish()
     }
-
     private fun mostrarLayoutCompartirPorID() {
         // Aquí muestra el layout para compartir por ID
         val builder = AlertDialog.Builder(this)
