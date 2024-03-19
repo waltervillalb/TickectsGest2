@@ -51,15 +51,7 @@ class EntradasAdapter(
 
         val btnVer: Button = holder.itemView.findViewById(R.id.btnVer)
 
-        if (entrada.fecha >= fechaActual) {
-            // Mostrar el botón si estamos en el día del evento
-            btnVer.visibility = View.VISIBLE
-            Log.d("EntradasAdapter", "Mostrando botón para ${entrada.nombreEvento}")
-        } else {
-            // Ocultar el botón si no estamos en el día del evento
-            btnVer.visibility = View.INVISIBLE
-            Log.d("EntradasAdapter", "Ocultando botón para ${entrada.nombreEvento}")
-        }
+
 
         btnVer.setOnClickListener {
             Log.d("EntradasAdapter", "ID de Entrada al hacer clic: ${entrada.idEntrada}")

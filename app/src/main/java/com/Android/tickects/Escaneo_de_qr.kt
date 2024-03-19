@@ -11,6 +11,8 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -69,32 +71,53 @@ class Escaneo_de_qr : AppCompatActivity() {
 
     private fun procesarTokenEscaneado(tokenEscaneado: String) {
         val usersRef = FirebaseDatabase.getInstance().getReference("users")
+        val firestoreDb = FirebaseFirestore.getInstance()
+        val userIdEscaneante = FirebaseAuth.getInstance().currentUser?.uid // ID del usuario que escanea
+
+        if (userIdEscaneante == null) {
+            Toast.makeText(this, "Usuario no autenticado", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 var uidEncontrado: String? = null
                 var entradaIDEncontrada: String? = null
 
-                for (uidSnapshot in dataSnapshot.children) {
-                    val uid = uidSnapshot.key ?: continue
-
+                loop@for (uidSnapshot in dataSnapshot.children) {
                     for (entradaSnapshot in uidSnapshot.children) {
                         val entradaID = entradaSnapshot.key
                         val token = entradaSnapshot.child("token").getValue(String::class.java)
 
                         if (token == tokenEscaneado) {
-                            uidEncontrado = uid
+                            uidEncontrado = uidSnapshot.key
                             entradaIDEncontrada = entradaID
-                            break
+                            break@loop
                         }
                     }
-                    if (uidEncontrado != null) break
                 }
 
                 if (uidEncontrado != null && entradaIDEncontrada != null) {
-                    actualizarHistorial(uidEncontrado, entradaIDEncontrada)
-                    eliminarEntradaAdquirida(uidEncontrado, entradaIDEncontrada)
-                    eliminarEntradaYTokenDeRealtimeDatabase(uidEncontrado, entradaIDEncontrada)
+                    // Obtener el sector de ambos usuarios y compararlos
+                    firestoreDb.collection("users").document(uidEncontrado).get().addOnSuccessListener { documentSnapshotEscaneado ->
+                        val sectorUsuarioEscaneado = documentSnapshotEscaneado.getString("sector")
+                        Log.d("CheckSector", "Sector Usuario Escaneado: $sectorUsuarioEscaneado")
+                        firestoreDb.collection("users").document(userIdEscaneante).get().addOnSuccessListener { documentSnapshotEscaneante ->
+                            val sectorUsuarioEscaneante = documentSnapshotEscaneante.getString("sector")
+                            Log.d("CheckSector", "Sector Usuario Escaneante: $sectorUsuarioEscaneante")
+                            if (sectorUsuarioEscaneado == sectorUsuarioEscaneante) {
+                                // Sectores coinciden
+                                actualizarHistorial(uidEncontrado, entradaIDEncontrada)
+                                eliminarEntradaAdquirida(uidEncontrado, entradaIDEncontrada)
+                                eliminarEntradaYTokenDeRealtimeDatabase(uidEncontrado, entradaIDEncontrada)
+                                Toast.makeText(applicationContext, "Validación exitosa. Sectores coinciden.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                mostrarDialogoError("Los sectores no coinciden", "El sector del usuario escaneado no coincide con el sector del usuario escaneante.")
+                            }
+                        }
+                    }.addOnFailureListener { e ->
+                        mostrarDialogoError("Error", "Se produjo un error al obtener los datos: ${e.message}")
+                    }
                 } else {
                     Toast.makeText(applicationContext, "Token no encontrado", Toast.LENGTH_SHORT).show()
                 }
@@ -109,7 +132,7 @@ class Escaneo_de_qr : AppCompatActivity() {
         val dbFirestore = FirebaseFirestore.getInstance()
         val transaccion = hashMapOf(
             "entradaID" to entradaID,
-            "accion" to "canjeado",
+            "accion" to "Escaneado",
             "fecha" to FieldValue.serverTimestamp()
         )
 
@@ -168,5 +191,15 @@ class Escaneo_de_qr : AppCompatActivity() {
                 // Manejar errores aquí
             }
         })
+    }
+    fun mostrarDialogoError(titulo: String, mensaje: String) {
+        AlertDialog.Builder(this)
+            .setTitle(titulo)
+            .setMessage(mensaje)
+            .setPositiveButton("OK") { dialog, which ->
+                // Aquí puedes poner lógica adicional que se ejecutará cuando el usuario toque "OK".
+                dialog.dismiss()
+            }
+            .show()
     }
 }

@@ -52,6 +52,6 @@ android:gravity="center_vertical">
     android:id="@+id/btnCopyInfo"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:src="@drawable/baseline_content_copy_24"/>
+    android:src="@drawable/baseline_share_24"/>
 </LinearLayout>
     </LinearLayout>

@@ -53,7 +53,6 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         )
 
  */
-        startSessionTimer()
         val analytics: FirebaseAnalytics
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -165,13 +164,14 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         val correo = findViewById<TextView>(R.id.correo_cabecera).text.toString()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "ID no disponible"
 
-        val infoToCopy = "Mi nombre es: $nombre, mi correo es: $correo y mi ID para compartir entradas es: $userId"
+        val infoToShare = "Mi nombre es: $nombre, mi correo es: $correo y mi ID para compartir entradas es: $userId"
 
-        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("UserInfo", infoToCopy)
-        clipboard.setPrimaryClip(clip)
-
-        Toast.makeText(this, "Información copiada al portapapeles", Toast.LENGTH_SHORT).show()
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, infoToShare)
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(shareIntent, "Compartir información con..."))
     }
     private fun replaceFragment(fragment: Fragment) {
         val fragmentManager = supportFragmentManager
@@ -182,43 +182,7 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     private fun showBottomDialog() {
     }
-    override fun onPause() {
-        super.onPause()
-        // Inicia el temporizador solo si no está ya iniciado
-        if (sessionTimer == null) {
-            startSessionTimer()
-        }
-    }
-    override fun onResume() {
-        super.onResume()
-        // Cancela el temporizador si la app vuelve a primer plano antes de los 5 minutos
-        stopSessionTimer()
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy: La actividad se está destruyendo")
-        stopSessionTimer() // Detiene el temporizador de sesión cuando la aplicación se destruye
-        updateSessionState(false) // Actualiza el estado de la sesión a false al destruir la aplicación
-    }
 
-    private fun startSessionTimer() {
-        sessionTimer?.cancel() // Asegurarse de cancelar cualquier temporizador existente
-        sessionTimer = object : CountDownTimer(SESSION_TIMEOUT, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                // Aquí podrías actualizar una UI con el tiempo restante si fuera necesario
-            }
-
-            override fun onFinish() {
-                // Actualiza el estado de la sesión a false
-                updateSessionState(false)
-            }
-        }.start()
-    }
-
-    private fun stopSessionTimer() {
-        sessionTimer?.cancel()
-        sessionTimer = null
-    }
     private fun logoutUser() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser != null) {
@@ -249,24 +213,6 @@ class HomeActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         }
     }
 
-    private fun updateSessionState(isActive: Boolean) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        currentUser?.let { user ->
-            val userId = user.uid
-            val databaseReference = FirebaseDatabase.getInstance().getReference("sesion")
-            databaseReference.child(userId).setValue(isActive)
-                .addOnCompleteListener { task ->
-                    if (!task.isSuccessful) {
-                        // Manejo de errores si falla la actualización en la base de datos
-                        Toast.makeText(
-                            baseContext,
-                            "Error al actualizar el estado de la sesión.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-        }
-    }
     override fun onBackPressed() {
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setMessage("¿Desea salir de la aplicación?")

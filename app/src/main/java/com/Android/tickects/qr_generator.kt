@@ -262,7 +262,8 @@ class qr_generator : AppCompatActivity() {
 
                 tvNombreEntrada.text = "Evento: $nombreEvento"
                 tvFecha.text = "fecha: $fecha"
-      1
+                tvUbicacion.text ="Ubicacion: $ubicacion"
+                tvHora.text = "Hora: $hora"
             }
         }
     }

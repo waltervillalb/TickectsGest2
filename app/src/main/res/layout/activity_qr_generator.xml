@@ -119,14 +119,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Número de CI: 12345678"
+                android:text="Cedula Numero:4372233"
                 android:textSize="16sp" />
         </LinearLayout>
         <TextView
             android:id="@+id/tvNumeroTelefono"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Número de Telefono: 12345678"
+            android:text="Telefono: 12345678"
             android:textSize="16sp" />
         <!-- Separador entre Usuario y Evento -->
         <View
@@ -168,14 +168,12 @@
             android:orientation="horizontal"
             android:layout_below="@id/tvFecha"
         android:layout_marginTop="8dp">
-
-        <!-- TextView para Ubicación -->
         <TextView
             android:id="@+id/tvUbicacion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Ubicación: Estadio Nacional"
+            android:text="Ubicación:Estadio"
             android:textSize="16sp" />
 
         <!-- TextView para Hora -->
@@ -186,8 +184,17 @@
             android:layout_weight="1"
             android:text="Hora: 22:30 hs"
             android:textSize="16sp" />
-    </LinearLayout>
 
+    </LinearLayout>
+        <TextView
+            android:id="@+id/tvSector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Sector: A"
+            android:textSize="16sp"
+            android:layout_below="@id/tvHora"
+            android:textAlignment="center"/>
     </LinearLayout>
 
     <Button
